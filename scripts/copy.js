@@ -26,7 +26,7 @@ async function copyAssignment(authToken) {
 	var copiedData = {};
 
 	copiedData.item_type = 'assignment';
-	copiedData.name = assignment.name;
+	copiedData.name = encodeURIComponent(assignment.name);
 	copiedData.submission_types = assignment.submission_types;
 	copiedData.allowed_extensions = assignment.allowed_extensions;
 	copiedData.peer_reviews = assignment.peer_reviews;
@@ -38,7 +38,7 @@ async function copyAssignment(authToken) {
 	copiedData.due_at = assignment.due_at;
 	copiedData.lock_at = assignment.lock_at;
 	copiedData.unlock_at = assignment.unlock_at;
-	copiedData.description = assignment.description;
+	copiedData.description = encodeURIComponent(assignment.description);
 	copiedData.assignment_overrides = assignment.assignment_overrides;
 	copiedData.only_visible_to_overrides = assignment.only_visible_to_overrides;
 	copiedData.published = assignment.published;
@@ -52,12 +52,21 @@ async function copyAssignment(authToken) {
 	copiedData.use_rubric_for_grading = assignment.use_rubric_for_grading;
 	copiedData.rubric = assignment.rubric;
 	copiedData.rubric_settings = assignment.rubric_settings;
-
+	if (copiedData.rubric != null) {
+		copiedData.rubric_settings.title = encodeURIComponent(assignment.rubric_settings.title);
+		for (var i = 0; i < copiedData.rubric.length; i++) {
+			copiedData.rubric[i].description = encodeURIComponent(assignment.rubric[i].description);
+			copiedData.rubric[i].long_description = encodeURIComponent(assignment.rubric[i].long_description);
+			for (var j = 0; j < copiedData.rubric[i].ratings.length; j++) {
+				copiedData.rubric[i].ratings[j].description = encodeURIComponent(assignment.rubric[i].ratings[j].description);
+				copiedData.rubric[i].ratings[j].long_description = encodeURIComponent(assignment.rubric[i].ratings[j].long_description);
+			}
+		}
+	}
+	
 	chrome.storage.local.set({'copiedData': copiedData}, function() {
-		console.log('Successfully copied item');
+		alert("Item Copied");
 	});
-
-	alert("Item Copied");
 }
 
 function copyDiscussion(authToken) {
