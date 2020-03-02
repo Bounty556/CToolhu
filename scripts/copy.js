@@ -29,9 +29,6 @@ async function copyAssignment(authToken) {
 	copiedData.name = assignment.name;
 	copiedData.submission_types = assignment.submission_types;
 	copiedData.allowed_extensions = assignment.allowed_extensions;
-	copiedData.turnitin_enabled = assignment.turnitin_enabled;
-	copiedData.vericite_enabled = assignment.vericite_enabled;
-	copiedData.turnitin_settings = assignment.turnitin_settings;
 	copiedData.peer_reviews = assignment.peer_reviews;
 	copiedData.automatic_peer_reviews = assignment.automatic_peer_reviews;
 	copiedData.grade_group_students_individually = assignment.grade_group_students_individually;
@@ -52,6 +49,7 @@ async function copyAssignment(authToken) {
 	copiedData.graders_anonymous_to_graders = assignment.graders_anonymous_to_graders;
 	copiedData.graders_names_visible_to_final_grader = assignment.graders_names_visible_to_final_grader;
 	copiedData.anonymous_grading = assignment.anonymous_grading;
+	copiedData.use_rubric_for_grading = assignment.use_rubric_for_grading;
 	copiedData.rubric = assignment.rubric;
 	copiedData.rubric_settings = assignment.rubric_settings;
 

@@ -78,17 +78,19 @@ function parseLinkHeader(header) {
 }
 
 function apiCall(url, call, payload, authToken) {
-	$.ajax( {
-			url: url,
-			type: call,
-			data: payload,
-			beforeSend : function(xhr) {
-				xhr.setRequestHeader("Authorization", "Bearer " + authToken);
-			}
-		})
-		.fail(function (jqXHR, textStatus, errorThrown) {
-			console.log("Could not process " + call + " due to error: " + errorThrown);
-		});
+	var result = $.ajax( {
+		url: url,
+		type: call,
+		data: payload,
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+		}
+	})
+	.fail(function (jqXHR, textStatus, errorThrown) {
+		console.log("Could not process " + call + " due to error: " + errorThrown);
+	});
+
+	return result;
 }
 
 function getAPIEndpoint() {

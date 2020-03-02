@@ -37,8 +37,6 @@ chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
 });
 
 async function pasteAssignment(copiedData, courseID, authToken) {
-	//TODO: Make rubrics copy over as well
-
 	// Consolidate payload
 	var payload = '';
 
@@ -72,6 +70,7 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 				payload = payload.concat('assignment[' + entries[i][0] + '][new_tab]=' + entries[i][1].new_tab + '&');
 				break;
 			case 'item_type':
+			case 'use_rubric_for_grading':
 			case 'rubric':
 			case 'rubric_settings':
 				break;
@@ -84,7 +83,49 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 	// Get rid of extra '&'
 	payload = payload.substr(0, payload.length - 1);
 
-	await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/assignments', 'POST', payload, authToken);
+	var assignment = await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/assignments', 'POST', payload, authToken);
+
+	if (copiedData.rubric == null || copiedData.rubric_settings == null) {
+		alert("Done!");
+		return;
+	}
+
+	// Create rubric
+	payload = 'rubric[title]=' + copiedData.rubric_settings.title + '&rubric[points_possible]=' + copiedData.rubric_settings.points_possible + '&rubric_association[use_for_grading]=' + copiedData.use_rubric_for_grading + '&rubric_association[hide_score_total]=' + copiedData.rubric_settings.hide_score_total + '&rubric_association[hide_points]=' + copiedData.rubric_settings.hide_points + '&rubric_association[hide_outcome_results]=false' + '&rubric[free_form_criterion_comments]=' + copiedData.rubric_settings.free_form_criterion_comments + '&rubric_id=new&rubric_association[association_type]=Assignment&rubric_association[association_id]=' + assignment.id + '&rubric_association[purpose]=grading&skip_updating_points_possible=false';
+
+	// For each criterion
+	for (var i = 0; i < copiedData.rubric.length; i++) {
+
+		var rubricEntries = Object.entries(copiedData.rubric[i]);
+		var ratingCount = 0;
+		// For each key in criterion
+		for (var j = 0; j < rubricEntries.length; j++) {
+			switch (rubricEntries[j][0]) {
+				case 'id':
+					break;
+				case 'ratings':
+					var ratings = rubricEntries[j][1];
+
+					// For each rating in criterion
+					for (var k = 0; k < ratings.length; k++) {
+						var ratingEntries = Object.entries(ratings[k]);
+						// For each key in rating in criterion
+						for (var h = 0; h < ratingEntries.length; h++) {
+							if (ratingEntries[h][1] != null && ratingEntries[h][0] != 'id') {
+								payload = payload.concat('&rubric[criteria][' + i + '][ratings][' + k + '][' + ratingEntries[h][0] + ']=' + ratingEntries[h][1]);
+							}
+						}
+					}
+					ratingCount++;
+					break;
+				default:
+					if (rubricEntries[j][1] != null)
+						payload = payload.concat('&rubric[criteria][' + i + '][' + rubricEntries[j][0] + ']=' + rubricEntries[j][1]);
+			}
+		}
+	}
+
+	var rubric = await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/rubrics', 'POST', payload, authToken);
 
 	alert("Done!");
 }
