@@ -16,6 +16,8 @@ chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
 		copyPage(authToken);
 	else if (/courses\/\d+\/quizzes\/\d+/.test(url))
 		copyQuiz(authToken);
+	else if (/courses\/\d+\/rubrics\/\d+/.test(url))
+		copyRubric(authToken);
 	else
 		alert("Not a valid item to copy");
 });
@@ -92,4 +94,28 @@ async function copyPage(authToken) {
 
 function copyQuiz(authToken) {
 	alert("Quiz found");
+}
+
+async function copyRubric(authToken) {
+	var rubric = await paginate(getAPIEndpoint(), '', authToken);
+
+	var copiedData = {};
+
+	copiedData.item_type = 'rubric';
+	copiedData.title = encodeURIComponent(rubric.title);
+	copiedData.free_form_criterion_comments = rubric.free_form_criterion_comments;
+	copiedData.data = rubric.data;
+
+	for (var i = 0; i < rubric.data.length; i++) {
+		copiedData.data[i].description = encodeURIComponent(rubric.data[i].description);
+		copiedData.data[i].long_description = encodeURIComponent(rubric.data[i].long_description);
+		for (var j = 0; j < copiedData.data[i].ratings.length; j++) {
+			copiedData.data[i].ratings[j].description = encodeURIComponent(rubric.data[i].ratings[j].description);
+			copiedData.data[i].ratings[j].long_description = encodeURIComponent(rubric.data[i].ratings[j].long_description);
+		}
+	}
+	
+	chrome.storage.local.set({'copiedData': copiedData}, function() {
+		alert("Item Copied");
+	});
 }

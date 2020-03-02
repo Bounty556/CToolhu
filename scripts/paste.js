@@ -27,6 +27,8 @@ chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
 					pastePage(copiedData, courseID, authToken);
 				else if (itemType == 'quiz')
 					pasteQuiz(copiedData, courseID, authToken);
+				else if (itemType == 'rubric')
+					pasteRubric(copiedData, courseID, authToken);
 				else
 					alert("Copied item is corrupted, please re-copy");
 			}
@@ -91,6 +93,7 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 	}
 
 	// Create rubric
+	// If you don't include rubric_id=new in the payload, this will just be absolutely broken. I spent like 12 hours on this because it's not mentioned anywhere in our docs
 	payload = 'rubric[title]=' + copiedData.rubric_settings.title + '&rubric[points_possible]=' + copiedData.rubric_settings.points_possible + '&rubric_association[use_for_grading]=' + copiedData.use_rubric_for_grading + '&rubric_association[hide_score_total]=' + copiedData.rubric_settings.hide_score_total + '&rubric_association[hide_points]=' + copiedData.rubric_settings.hide_points + '&rubric_association[hide_outcome_results]=false' + '&rubric[free_form_criterion_comments]=' + copiedData.rubric_settings.free_form_criterion_comments + '&rubric_id=new&rubric_association[association_type]=Assignment&rubric_association[association_id]=' + assignment.id + '&rubric_association[purpose]=grading&skip_updating_points_possible=false';
 
 	// For each criterion
@@ -125,7 +128,7 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 		}
 	}
 
-	var rubric = await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/rubrics', 'POST', payload, authToken);
+	await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/rubrics', 'POST', payload, authToken);
 
 	alert("Done!");
 }
@@ -142,6 +145,8 @@ async function pastePage(copiedData, courseID, authToken) {
 
 	for (var i = 0; i < entries.length; i++) {
 		switch(entries[i][0]) {
+			case 'item_type':
+				break;
 			default:
 				if (entries[i][1] != null)
 					payload = payload.concat('wiki_page[' + entries[i][0] + ']=' + entries[i][1] + '&');
@@ -151,8 +156,6 @@ async function pastePage(copiedData, courseID, authToken) {
 	// Get rid of extra '&'
 	payload = payload.substr(0, payload.length - 1);
 
-	console.log(payload);
-
 	await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/pages', 'POST', payload, authToken);
 
 	alert("Done!");
@@ -160,4 +163,49 @@ async function pastePage(copiedData, courseID, authToken) {
 
 function pasteQuiz(copiedData, courseID, authToken) {
 	alert('pasting quiz');
+}
+
+async function pasteRubric(copiedData, courseID, authToken) {
+	// Consolidate payload
+	var payload = '';
+
+	payload = payload.concat('rubric_association[purpose]=bookmark&rubric_association[association_type]=Course&rubric_association[association_id]=' + courseID + '&rubric[title]=' + copiedData.title + '&rubric[free_form_criterion_comments]=' + copiedData.free_form_criterion_comments);
+
+	// For each criterion
+	for (var i = 0; i < copiedData.data.length; i++) {
+
+		var rubricEntries = Object.entries(copiedData.data[i]);
+		var ratingCount = 0;
+		// For each key in criterion
+		for (var j = 0; j < rubricEntries.length; j++) {
+			switch (rubricEntries[j][0]) {
+				case 'id':
+					break;
+				case 'ratings':
+					var ratings = rubricEntries[j][1];
+
+					// For each rating in criterion
+					for (var k = 0; k < ratings.length; k++) {
+						var ratingEntries = Object.entries(ratings[k]);
+						// For each key in rating in criterion
+						for (var h = 0; h < ratingEntries.length; h++) {
+							if (ratingEntries[h][1] != null && ratingEntries[h][0] != 'id') {
+								payload = payload.concat('&rubric[criteria][' + i + '][ratings][' + k + '][' + ratingEntries[h][0] + ']=' + ratingEntries[h][1]);
+							}
+						}
+					}
+					ratingCount++;
+					break;
+				default:
+					if (rubricEntries[j][1] != null)
+						payload = payload.concat('&rubric[criteria][' + i + '][' + rubricEntries[j][0] + ']=' + rubricEntries[j][1]);
+			}
+		}
+	}
+
+	console.log(payload);
+
+	await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/rubrics', 'POST', payload, authToken);
+
+	alert("Done!");
 }
