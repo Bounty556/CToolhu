@@ -79,8 +79,8 @@ async function copyPage(authToken) {
 	var copiedData = {};
 
 	copiedData.item_type = 'page';
-	copiedData.title = page.title;
-	copiedData.body = page.body;
+	copiedData.title = encodeURIComponent(page.title);
+	copiedData.body = encodeURIComponent(page.body);
 	copiedData.published = page.published;
 
 	chrome.storage.local.set({'copiedData': copiedData}, function() {
