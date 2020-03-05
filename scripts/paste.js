@@ -204,7 +204,7 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 	var normalParams = ['question_type', 'position', 'points_possible', 'formula_decimal_places'];
 	var specialParams = ['question_name', 'question_text', 'correct_comments', 'incorrect_comments', 'neutral_comments', 'text_after_answers', 'answer_tolerance', 'matching_answer_incorrect_matches'];
 
-	var normalAnsParams = ['weight', 'answer', 'exact', 'margin', 'numerical_answer_type', 'match_id'];
+	var normalAnsParams = ['answer', 'exact', 'margin', 'numerical_answer_type', 'match_id'];
 	var	specialAnsParams = ['text', 'comments', 'name', 'left', 'right', 'blank_id'];
 
 	for (var i = 0; i < copiedData.questions.length; i++) {
@@ -234,7 +234,7 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 		// Check for the 'formulas' param
 		if (question.formulas != null) {
 			for (var j = 0; j < question.formulas.length; j++) {
-				payload = payload.concat('question[formulas][' + j + '][formula]=' + encodeURIComponent(question.formulas[j].formula) + '&');
+				payload = payload.concat('question[formulas][]=' + encodeURIComponent(question.formulas[j].formula) + '&');
 			}
 		}
 
@@ -251,8 +251,12 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 
 		// Add answers to question
 		
-
 		for (var j = 0; j < question.answers.length; j++) {
+
+			if (question.answers[j].weight != null) {
+				payload = payload.concat('question[answers][' + j + '][answer_weight]=' + question.answers[j].weight + '&');
+			}
+
 			for (var k = 0; k < normalAnsParams.length; k++) {
 				if (question.answers[j][normalAnsParams[k]] != null)
 					payload = payload.concat('question[answers][' + j + '][' + normalAnsParams[k] + ']=' + question.answers[j][normalAnsParams[k]] + '&');
@@ -271,12 +275,12 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 			}
 		}
 
-		await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/quizzes/' + quiz.id + '/questions', 'POST', payload, authToken);
+		payload = payload.substr(0, payload.length - 1);
+
+		apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/quizzes/' + quiz.id + '/questions', 'POST', payload, authToken);
 
 		console.log(payload);
 	}
-
-	payload = payload.substr(0, payload.length - 1);
 
 	alert('Done');
 }
