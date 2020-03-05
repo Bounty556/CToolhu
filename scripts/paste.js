@@ -202,10 +202,10 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 
 	// Add questions to quiz
 	var normalParams = ['question_type', 'position', 'points_possible', 'formula_decimal_places'];
-	var specialParams = ['question_name', 'question_text', 'correct_comments', 'incorrect_comments', 'neutral_comments', 'text_after_answers', 'answer_tolerance', 'matching_answer_incorrect_matches'];
+	var specialParams = ['question_name', 'question_text', 'correct_comments_html', 'incorrect_comments_html', 'neutral_comments_html', 'text_after_answers', 'answer_tolerance', 'matching_answer_incorrect_matches'];
 
-	var normalAnsParams = ['answer', 'exact', 'margin', 'numerical_answer_type', 'match_id'];
-	var	specialAnsParams = ['text', 'comments', 'name', 'left', 'right', 'blank_id'];
+	var normalAnsParams = ['numerical_answer_type', 'match_id'];
+	var	specialAnsParams = ['text', 'comments_html', 'name', 'blank_id'];
 
 	for (var i = 0; i < copiedData.questions.length; i++) {
 		var question = copiedData.questions[i];
@@ -255,6 +255,30 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 
 			if (question.answers[j].weight != null) {
 				payload = payload.concat('question[answers][' + j + '][answer_weight]=' + question.answers[j].weight + '&');
+			}
+
+			if (question.answers[j].answer != null) {
+				payload = payload.concat('question[answers][' + j + '][answer_text]=' + question.answers[j].answer + '&');
+			}
+
+			if (question.answers[j].exact != null) {
+				payload = payload.concat('question[answers][' + j + '][answer_exact]=' + question.answers[j].exact + '&');
+			}
+
+			if (question.answers[j].margin != null) {
+				payload = payload.concat('question[answers][' + j + '][answer_error_margin]=' + question.answers[j].margin + '&');
+			}
+
+			if (question.answers[j].left != null) {
+				payload = payload.concat('question[answers][' + j + '][answer_match_left]=' + encodeURIComponent(question.answers[j].left) + '&');
+			}
+
+			if (question.answers[j].right != null) {
+				payload = payload.concat('question[answers][' + j + '][answer_match_right]=' + encodeURIComponent(question.answers[j].right) + '&');
+			}
+
+			if (question.answers[j].comments_html != null) {
+				payload = payload.concat('question[answers][' + j + '][answer_comment_html]=' + encodeURIComponent(question.answers[j].comments_html) + '&');
 			}
 
 			for (var k = 0; k < normalAnsParams.length; k++) {
