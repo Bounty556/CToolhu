@@ -41,7 +41,6 @@ async function copyAssignment(authToken) {
 	copiedData.lock_at = assignment.lock_at;
 	copiedData.unlock_at = assignment.unlock_at;
 	copiedData.description = encodeURIComponent(assignment.description);
-	copiedData.assignment_overrides = assignment.assignment_overrides;
 	copiedData.only_visible_to_overrides = assignment.only_visible_to_overrides;
 	copiedData.published = assignment.published;
 	copiedData.omit_from_final_grade = assignment.omit_from_final_grade;
@@ -92,8 +91,26 @@ async function copyPage(authToken) {
 	alert("Item Copied");
 }
 
-function copyQuiz(authToken) {
-	alert("Quiz found");
+async function copyQuiz(authToken) {
+	var quiz = await paginate(getAPIEndpoint(), '', authToken);
+	var quizQuestions = await paginate(getAPIEndpoint() + '/questions', '', authToken);
+
+	var copiedData = quiz;
+
+	copiedData.item_type = 'quiz';
+	copiedData.questions = quizQuestions;
+	copiedData.questionGroups = [];
+
+	for (var i = 0; i < copiedData.questions.length; i++) {
+		if (copiedData.questions[i].quiz_group_id != null) {
+			var group = await paginate(getAPIEndpoint() + '/groups/' + copiedData.questions[i].quiz_group_id, '', authToken);
+			copiedData.questionGroups.push(group);
+		}
+	}
+
+	chrome.storage.local.set({'copiedData': copiedData}, function() {
+		alert("Item Copied");
+	});
 }
 
 async function copyRubric(authToken) {

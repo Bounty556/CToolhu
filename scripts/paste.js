@@ -133,7 +133,7 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 	alert("Done!");
 }
 
-function pasteDiscussion(copiedData, courseID, authToken) {
+async function pasteDiscussion(copiedData, courseID, authToken) {
 	alert('pasting discussion');
 }
 
@@ -161,8 +161,124 @@ async function pastePage(copiedData, courseID, authToken) {
 	alert("Done!");
 }
 
-function pasteQuiz(copiedData, courseID, authToken) {
-	alert('pasting quiz');
+async function pasteQuiz(copiedData, courseID, authToken) {
+
+	var normalParams = ['quiz_type', 'assignment_group_id', 'time_limit', 'shuffle_answers', 'hide_results', 'show_correct_answers', 'show_correct_answers_last_attempt', 'show_correct_answers_at', 'hide_correct_answers_at', 'allowed_attempts', 'scoring_policy', 'one_question_at_a_time', 'cant_go_back', 'access_code', 'ip_filter', 'due_at', 'lock_at', 'unlock_at', 'published', 'one_time_results', 'only_visible_to_overrides'];
+	var specialParams = ['title', 'description'];
+
+	// Consolidate payload
+	var payload = '';
+
+	for (var i = 0; i < normalParams.length; i++) {
+		if (copiedData[normalParams[i]] != null) {
+			if (specialParams.includes(normalParams[i]))
+				payload = payload.concat('quiz[' + normalParams[i] + ']=' + encodeURIComponent(copiedData[normalParams[i]]) + '&');
+			else
+				payload = payload.concat('quiz[' + normalParams[i] + ']=' + copiedData[normalParams[i]] + '&');
+		}
+	}
+
+	for (var i = 0; i < specialParams.length; i++) {
+		if (copiedData[specialParams[i]] != null) {
+			payload = payload.concat('quiz[' + specialParams[i] + ']=' + encodeURIComponent(copiedData[specialParams[i]]) + '&');	
+		}
+	}
+
+	// Get rid of extra '&'
+	payload = payload.substr(0, payload.length - 1);
+
+	var quiz = await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/quizzes', 'POST', payload, authToken);
+
+	// Map question groups in original quiz to groups in new quiz
+	var groupIDMap = {};
+	for (var i = 0; i < copiedData.questionGroups.length; i++) {
+		payload = 'quiz_groups[][name]=' + copiedData.questionGroups[i].name + '&quiz_groups[][pick_count]=' + copiedData.questionGroups[i].pick_count + '&quiz_groups[][question_points]=' + copiedData.questionGroups[i].question_points;
+
+		var group = await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/quizzes/' + quiz.id + '/groups', 'POST', payload, authToken);
+
+		// https://canvas.instructure.com/doc/api/quiz_question_groups.html#method.quizzes/quiz_groups.create
+		groupIDMap[copiedData.questionGroups[i].id] = group.quiz_groups[0].id;
+	}
+
+	// Add questions to quiz
+	var normalParams = ['question_type', 'position', 'points_possible', 'formula_decimal_places'];
+	var specialParams = ['question_name', 'question_text', 'correct_comments', 'incorrect_comments', 'neutral_comments', 'text_after_answers', 'answer_tolerance', 'matching_answer_incorrect_matches'];
+
+	var normalAnsParams = ['weight', 'answer', 'exact', 'margin', 'numerical_answer_type', 'match_id'];
+	var	specialAnsParams = ['text', 'comments', 'name', 'left', 'right', 'blank_id'];
+
+	for (var i = 0; i < copiedData.questions.length; i++) {
+		var question = copiedData.questions[i];
+
+		payload = '';
+
+		for (var j = 0; j < normalParams.length; j++) {
+			if (question[normalParams[j]] != null) {
+				payload = payload.concat('question[' + normalParams[j] + ']=' + question[normalParams[j]] + '&');
+			}
+		}
+
+		for (var j = 0; j < specialParams.length; j++) {
+			if (question[specialParams[j]] != null) {
+				payload = payload.concat('question[' + specialParams[j] + ']=' + encodeURIComponent(question[specialParams[j]]) + '&');
+			}
+		}
+
+		// Check for the 'variables' param
+		if (question.variables != null) {
+			for (var j = 0; j < question.variables.length; j++) {
+				payload = payload.concat('question[variables][' + j + '][name]=' + encodeURIComponent(question.variables[j].name) + '&question[variables][' + j + '][min]=' + question.variables[j].min + '&question[variables][' + j + '][max]=' + question.variables[j].max + '&question[variables][' + j + '][scale]=' + question.variables[j].scale + '&');
+			}
+		}
+
+		// Check for the 'formulas' param
+		if (question.formulas != null) {
+			for (var j = 0; j < question.formulas.length; j++) {
+				payload = payload.concat('question[formulas][' + j + '][formula]=' + encodeURIComponent(question.formulas[j].formula) + '&');
+			}
+		}
+
+		// Check for the 'matches' param
+		if (question.matches != null) {
+			for (var j = 0; j < question.matches.length; j++) {
+				payload = payload.concat('question[matches][' + j + '][text]=' + encodeURIComponent(question.matches[j].text) + '&question[matches][' + j + '][match_id]=' + question.matches[j].match_id);
+			}
+		}
+
+		// Put question in group ID if valid
+		if (question.quiz_group_id != null && groupIDMap[question.quiz_group_id] != null)
+			payload = payload.concat('question[quiz_group_id]=' + groupIDMap[question.quiz_group_id] + '&');
+
+		// Add answers to question
+		
+
+		for (var j = 0; j < question.answers.length; j++) {
+			for (var k = 0; k < normalAnsParams.length; k++) {
+				if (question.answers[j][normalAnsParams[k]] != null)
+					payload = payload.concat('question[answers][' + j + '][' + normalAnsParams[k] + ']=' + question.answers[j][normalAnsParams[k]] + '&');
+			}
+
+			for (var k = 0; k < specialAnsParams.length; k++) {
+				if (question.answers[j][specialAnsParams[k]] != null)
+					payload = payload.concat('question[answers][' + j + '][' + specialAnsParams[k] + ']=' + encodeURIComponent(question.answers[j][specialAnsParams[k]]) + '&');
+			}
+
+			// // Check for the 'variables' param
+			if (question.answers[j].variables != null) {
+				for (var k = 0; k < question.answers[j].variables.length; k++) {
+					payload = payload.concat('question[answers][' + j + '][variables][' + k + '][name]=' + encodeURIComponent(question.answers[j].variables[k].name) + '&question[answers][' + j + '][variables][' + k + '][value]=' + question.answers[j].variables[k].value + '&');
+				}
+			}
+		}
+
+		await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/quizzes/' + quiz.id + '/questions', 'POST', payload, authToken);
+
+		console.log(payload);
+	}
+
+	payload = payload.substr(0, payload.length - 1);
+
+	alert('Done');
 }
 
 async function pasteRubric(copiedData, courseID, authToken) {
