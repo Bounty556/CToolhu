@@ -269,6 +269,22 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 				payload = payload.concat('question[answers][' + j + '][answer_error_margin]=' + question.answers[j].margin + '&');
 			}
 
+			if (question.answers[j].start != null) {
+				payload = payload.concat('question[answers][' + j + '][answer_range_start]=' + question.answers[j].start + '&');
+			}
+
+			if (question.answers[j].end != null) {
+				payload = payload.concat('question[answers][' + j + '][answer_range_end]=' + question.answers[j].end + '&');
+			}
+
+			if (question.answers[j].approximate != null) {
+				payload = payload.concat('question[answers][' + j + '][answer_approximate]=' + question.answers[j].approximate + '&');
+			}
+
+			if (question.answers[j].precision != null) {
+				payload = payload.concat('question[answers][' + j + '][answer_precision]=' + question.answers[j].precision + '&');
+			}
+
 			if (question.answers[j].left != null) {
 				payload = payload.concat('question[answers][' + j + '][answer_match_left]=' + encodeURIComponent(question.answers[j].left) + '&');
 			}
@@ -352,4 +368,8 @@ async function pasteRubric(copiedData, courseID, authToken) {
 	await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/rubrics', 'POST', payload, authToken);
 
 	alert("Done!");
+}
+
+function generateParam(string, holder, parent) {
+	
 }
