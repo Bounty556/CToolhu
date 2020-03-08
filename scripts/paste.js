@@ -42,44 +42,34 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 	// Consolidate payload
 	var payload = '';
 
-	var entries = Object.entries(copiedData);
+	var normalParams = ['peer_reviews', 'automatic_peer_reviews', 'grade_group_students_individually', 'points_possible', 'grading_type', 'due_at', 'lock_at', 'unlock_at', 'external_tool_tag_attributes', 'only_visible_to_overrides', 'published', 'omit_from_final_grade', 'quiz_lti', 'moderated_grading', 'grader_comments_visible_to_graders', 'graders_anonymous_to_graders', 'graders_names_visible_to_graders', 'anonymous_grading'];
+	var specialParams = ['name', 'description'];
 
-	for (var i = 0; i < entries.length; i++) {
-		switch(entries[i][0]) {
-			case 'submission_types':
-				for (var j = 0; j < entries[i][1].length; j++) {
-					payload = payload.concat('assignment[' + entries[i][0] + '][]=' + entries[i][1][j] + '&');
-				}
-				break;
-			case 'allowed_extensions':
-				payload = payload.concat('assignment[' + entries[i][0] + ']=');
+	for (var i = 0; i < normalParams.length; i++) {
+		if (copiedData[normalParams[i]] != null)
+			payload = payload.concat('assignment[' + normalParams[i] + ']=' + copiedData[normalParams[i]] + '&');
+	}
 
-				if (entries[i][1].length != null) {
-					for (var j = 0; j < entries[i][1].length; j++) {
-						payload = payload.concat(entries[i][1][j] + ',');
-					}
+	for (var i = 0; i < specialParams.length; i++) {
+		if (copiedData[specialParams[i]] != null)
+			payload = payload.concat('assignment[' + specialParams[i] + ']=' + copiedData[specialParams[i]] + '&');
+	}
 
-					// Get rid of extra comma
-					payload = payload.substr(0, payload.length - 1);
-				} else {
-					payload = payload.concat(entries[i][1]);
-				}
-
-				payload = payload.concat('&');
-				break;
-			case 'external_tool_tag_attributes':
-				payload = payload.concat('assignment[' + entries[i][0] + '][url]=' + entries[i][1].url + '&');
-				payload = payload.concat('assignment[' + entries[i][0] + '][new_tab]=' + entries[i][1].new_tab + '&');
-				break;
-			case 'item_type':
-			case 'use_rubric_for_grading':
-			case 'rubric':
-			case 'rubric_settings':
-				break;
-			default:
-				if (entries[i][1] != null)
-					payload = payload.concat('assignment[' + entries[i][0] + ']=' + entries[i][1] + '&');
+	if (copiedData.submission_types != null) {
+		for (var i = 0; i < copiedData.submission_types.length; i++) {
+			payload = payload.concat('assignment[submission_types][]=' + copiedData.submission_types[i] + '&');
 		}
+	}
+	
+	if (copiedData.allowed_extensions != null) {
+		for (var i = 0; i < copiedData.allowed_extensions.length; i++) {
+			payload = payload.concat('assignment[allowed_extensions][]=' + copiedData.allowed_extensions[i] + '&');
+		}
+	}
+
+	if (copiedData.external_tool_tag_attributes != null) {
+		payload = payload.concat('assignment[external_tool_tag_attributes][url]=' + copiedData.external_tool_tag_attributes.url + '&');
+		payload = payload.concat('assignment[external_tool_tag_attributes][new_tab]=' + copiedData.external_tool_tag_attributes.new_tab + '&');
 	}
 
 	// Get rid of extra '&'
@@ -122,8 +112,9 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 					ratingCount++;
 					break;
 				default:
-					if (rubricEntries[j][1] != null)
+					if (rubricEntries[j][1] != null) {
 						payload = payload.concat('&rubric[criteria][' + i + '][' + rubricEntries[j][0] + ']=' + rubricEntries[j][1]);
+					}
 			}
 		}
 	}
@@ -134,7 +125,34 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 }
 
 async function pasteDiscussion(copiedData, courseID, authToken) {
-	alert('pasting discussion');
+	var payload = '';
+
+	normalParams = ['discussion_type', 'published', 'delayed_post_at', 'allow_rating', 'lock_at', 'podcast_enabled', 'podcast_has_student_posts', 'require_initial_post', 'is_announcement', 'pinned', 'only_graders_can_rate', 'sort_by_rating'];
+	specialParams = ['title', 'message'];
+
+	for (var i = 0; i < normalParams.length; i++) {
+		if (copiedData[normalParams[i]] != null)
+			payload = payload.concat(normalParams[i] + '=' + copiedData[normalParams[i]] + '&');
+	}
+
+	for (var i = 0; i < specialParams.length; i++) {
+		if (copiedData[specialParams[i]] != null)
+			payload = payload.concat(specialParams[i] + '=' + encodeURIComponent(copiedData[specialParams[i]]) + '&');
+	}
+
+	if (copiedData.attachment != null) {
+		
+	}
+
+	payload = payload.substr(0, payload.length - 1);
+
+	await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/discussion_topics', 'POST', payload, authToken);
+
+	console.log(payload);
+
+	alert("Done!");
+
+	// Add assignment object, and file object
 }
 
 async function pastePage(copiedData, courseID, authToken) {
@@ -329,7 +347,9 @@ async function pasteRubric(copiedData, courseID, authToken) {
 	// Consolidate payload
 	var payload = '';
 
-	payload = payload.concat('rubric_association[purpose]=bookmark&rubric_association[association_type]=Course&rubric_association[association_id]=' + courseID + '&rubric[title]=' + copiedData.title + '&rubric[free_form_criterion_comments]=' + copiedData.free_form_criterion_comments);
+	payload = payload.concat('rubric_association[purpose]=bookmark&rubric_association[association_type]=Course&rubric_association[association_id]=' + courseID + '&rubric[title]=' + encodeURIComponent(copiedData.title) + '&rubric[free_form_criterion_comments]=' + copiedData.free_form_criterion_comments);
+
+	var normalParams = [''];
 
 	// For each criterion
 	for (var i = 0; i < copiedData.data.length; i++) {
@@ -368,8 +388,4 @@ async function pasteRubric(copiedData, courseID, authToken) {
 	await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/rubrics', 'POST', payload, authToken);
 
 	alert("Done!");
-}
-
-function generateParam(string, holder, parent) {
-	
 }
