@@ -47,6 +47,7 @@ async function copyDiscussion(authToken) {
 	var copiedData = await paginate(getAPIEndpoint(), '', authToken);
 
 	copiedData.item_type = 'discussion';
+	copiedData.entries = await paginate(getAPIEndpoint() + '/entries', '', authToken);
 
 	chrome.storage.local.set({'copiedData': copiedData}, function() {
 		alert("Item Copied");

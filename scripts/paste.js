@@ -140,19 +140,32 @@ async function pasteDiscussion(copiedData, courseID, authToken) {
 			payload = payload.concat(specialParams[i] + '=' + encodeURIComponent(copiedData[specialParams[i]]) + '&');
 	}
 
-	if (copiedData.attachment != null) {
-		
+	// Add assignment object
+	if (copiedData.assignment != null) {
+
+		var normalParams = ['peer_reviews', 'automatic_peer_reviews', 'grade_group_students_individually', 'points_possible', 'grading_type', 'due_at', 'lock_at', 'unlock_at', 'only_visible_to_overrides', 'published', 'omit_from_final_grade', 'moderated_grading', 'grader_comments_visible_to_graders', 'graders_anonymous_to_graders', 'graders_names_visible_to_graders', 'anonymous_grading'];
+
+		for (var i = 0; i < normalParams.length; i++) {
+			if (copiedData.assignment[normalParams[i]] != null)
+				payload = payload.concat('assignment[' + normalParams[i] + ']=' + copiedData.assignment[normalParams[i]] + '&');
+		}
 	}
 
 	payload = payload.substr(0, payload.length - 1);
 
-	await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/discussion_topics', 'POST', payload, authToken);
+	var discussion = await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/discussion_topics', 'POST', payload, authToken);
 
-	console.log(payload);
+	// Add entries
+	for (var i = 0; i < copiedData.entries.length; i++) {
+		var entry = apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/discussion_topics/' + discussion.id + '/entries', 'POST', 'message=' + encodeURIComponent(copiedData.entries[i].message), authToken);
+
+		// Add recent replies to entries
+		if (copiedData.entries[i].recent_replies != null) {
+			addEntryReplies(entry, copiedData.entries[i].recent_replies, document.location.origin + '/api/v1/courses/' + courseID + '/discussion_topics/' + discussion.id + '/entries', authToken);
+		}
+	}
 
 	alert("Done!");
-
-	// Add assignment object, and file object
 }
 
 async function pastePage(copiedData, courseID, authToken) {
@@ -388,4 +401,12 @@ async function pasteRubric(copiedData, courseID, authToken) {
 	await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/rubrics', 'POST', payload, authToken);
 
 	alert("Done!");
+}
+
+async function addEntryReplies(promisedEntry, replies, URL, authToken) {
+	var entry = await promisedEntry;
+
+	for (var i = 0; i < replies.length; i++) {
+		apiCall(URL + '/' + entry.id + '/replies', 'POST', 'message=' + encodeURIComponent(replies[i].message), authToken);
+	}
 }

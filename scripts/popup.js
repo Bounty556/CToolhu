@@ -18,7 +18,6 @@ function splunkHandler() {
 	});
 }
 
-
 function copyHandler() {
 	chrome.tabs.executeScript(null, {
 		file: 'scripts/copy.js'
@@ -60,10 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener('DOMContentLoaded', function () {
 	document.getElementById('paste').addEventListener('click', pasteHandler);
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-	document.getElementById('verifyImages').addEventListener('click', verifyImagesHandler);
 });
 
 // Button functions
