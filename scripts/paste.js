@@ -42,7 +42,7 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 	// Consolidate payload
 	var payload = '';
 
-	var normalParams = ['peer_reviews', 'automatic_peer_reviews', 'grade_group_students_individually', 'points_possible', 'grading_type', 'due_at', 'lock_at', 'unlock_at', 'external_tool_tag_attributes', 'only_visible_to_overrides', 'published', 'omit_from_final_grade', 'quiz_lti', 'moderated_grading', 'grader_comments_visible_to_graders', 'graders_anonymous_to_graders', 'graders_names_visible_to_graders', 'anonymous_grading'];
+	var normalParams = ['peer_reviews', 'automatic_peer_reviews', 'grade_group_students_individually', 'points_possible', 'grading_type', 'due_at', 'lock_at', 'unlock_at', 'only_visible_to_overrides', 'published', 'omit_from_final_grade', 'grader_comments_visible_to_graders', 'graders_anonymous_to_graders', 'graders_names_visible_to_graders', 'anonymous_grading'];
 	var specialParams = ['name', 'description'];
 
 	for (var i = 0; i < normalParams.length; i++) {
@@ -52,7 +52,7 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 
 	for (var i = 0; i < specialParams.length; i++) {
 		if (copiedData[specialParams[i]] != null)
-			payload = payload.concat('assignment[' + specialParams[i] + ']=' + copiedData[specialParams[i]] + '&');
+			payload = payload.concat('assignment[' + specialParams[i] + ']=' + encodeURIComponent(copiedData[specialParams[i]]) + '&');
 	}
 
 	if (copiedData.submission_types != null) {
@@ -127,7 +127,7 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 async function pasteDiscussion(copiedData, courseID, authToken) {
 	var payload = '';
 
-	normalParams = ['discussion_type', 'published', 'delayed_post_at', 'allow_rating', 'lock_at', 'podcast_enabled', 'podcast_has_student_posts', 'require_initial_post', 'is_announcement', 'pinned', 'only_graders_can_rate', 'sort_by_rating'];
+	normalParams = ['discussion_type', 'published', 'delayed_post_at', 'allow_rating', 'lock_at', 'podcast_enabled', 'podcast_has_student_posts', 'require_initial_post', 'pinned', 'only_graders_can_rate', 'sort_by_rating'];
 	specialParams = ['title', 'message'];
 
 	for (var i = 0; i < normalParams.length; i++) {
@@ -138,6 +138,10 @@ async function pasteDiscussion(copiedData, courseID, authToken) {
 	for (var i = 0; i < specialParams.length; i++) {
 		if (copiedData[specialParams[i]] != null)
 			payload = payload.concat(specialParams[i] + '=' + encodeURIComponent(copiedData[specialParams[i]]) + '&');
+	}
+
+	if (copiedData.subscription_hold != null) {
+		payload = payload.concat('is_announcement=true&');
 	}
 
 	// Add assignment object
@@ -194,8 +198,6 @@ async function pasteDiscussion(copiedData, courseID, authToken) {
 				}
 			}
 		}
-
-		console.log(payload);
 
 		apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/rubrics', 'POST', payload, authToken);
 	}
