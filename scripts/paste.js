@@ -155,6 +155,51 @@ async function pasteDiscussion(copiedData, courseID, authToken) {
 
 	var discussion = await apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/discussion_topics', 'POST', payload, authToken);
 
+	// Add rubric
+	if (copiedData.assignment != null && copiedData.assignment.rubric != null) {
+		var assignment = copiedData.assignment;
+		// Create rubric
+		// If you don't include rubric_id=new in the payload, this will just be absolutely broken. I spent like 12 hours on this because it's not mentioned anywhere in our docs
+		payload = 'rubric[title]=' + assignment.rubric_settings.title + '&rubric[points_possible]=' + assignment.rubric_settings.points_possible + '&rubric_association[use_for_grading]=' + assignment.use_rubric_for_grading + '&rubric_association[hide_score_total]=' + assignment.rubric_settings.hide_score_total + '&rubric_association[hide_points]=' + assignment.rubric_settings.hide_points + '&rubric_association[hide_outcome_results]=false' + '&rubric[free_form_criterion_comments]=' + assignment.rubric_settings.free_form_criterion_comments + '&rubric_id=new&rubric_association[association_type]=Assignment&rubric_association[association_id]=' + discussion.assignment_id + '&rubric_association[purpose]=grading&skip_updating_points_possible=false';
+
+		// For each criterion
+		for (var i = 0; i < assignment.rubric.length; i++) {
+
+			var rubricEntries = Object.entries(assignment.rubric[i]);
+			var ratingCount = 0;
+			// For each key in criterion
+			for (var j = 0; j < rubricEntries.length; j++) {
+				switch (rubricEntries[j][0]) {
+					case 'id':
+						break;
+					case 'ratings':
+						var ratings = rubricEntries[j][1];
+
+						// For each rating in criterion
+						for (var k = 0; k < ratings.length; k++) {
+							var ratingEntries = Object.entries(ratings[k]);
+							// For each key in rating in criterion
+							for (var h = 0; h < ratingEntries.length; h++) {
+								if (ratingEntries[h][1] != null && ratingEntries[h][0] != 'id') {
+									payload = payload.concat('&rubric[criteria][' + i + '][ratings][' + k + '][' + ratingEntries[h][0] + ']=' + ratingEntries[h][1]);
+								}
+							}
+						}
+						ratingCount++;
+						break;
+					default:
+						if (rubricEntries[j][1] != null) {
+							payload = payload.concat('&rubric[criteria][' + i + '][' + rubricEntries[j][0] + ']=' + rubricEntries[j][1]);
+						}
+				}
+			}
+		}
+
+		console.log(payload);
+
+		apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/rubrics', 'POST', payload, authToken);
+	}
+
 	// Add entries
 	for (var i = 0; i < copiedData.entries.length; i++) {
 		var entry = apiCall(document.location.origin + '/api/v1/courses/' + courseID + '/discussion_topics/' + discussion.id + '/entries', 'POST', 'message=' + encodeURIComponent(copiedData.entries[i].message), authToken);
@@ -236,7 +281,7 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 	var specialParams = ['question_name', 'question_text', 'correct_comments_html', 'incorrect_comments_html', 'neutral_comments_html', 'text_after_answers', 'answer_tolerance', 'matching_answer_incorrect_matches'];
 
 	var normalAnsParams = ['numerical_answer_type', 'match_id'];
-	var	specialAnsParams = ['text', 'comments_html', 'name', 'blank_id'];
+	var	specialAnsParams = ['text', 'comments_html', 'name', 'blank_id', 'html'];
 
 	for (var i = 0; i < copiedData.questions.length; i++) {
 		var question = copiedData.questions[i];
@@ -281,7 +326,6 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 			payload = payload.concat('question[quiz_group_id]=' + groupIDMap[question.quiz_group_id] + '&');
 
 		// Add answers to question
-		
 		for (var j = 0; j < question.answers.length; j++) {
 
 			if (question.answers[j].weight != null) {

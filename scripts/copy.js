@@ -49,6 +49,18 @@ async function copyDiscussion(authToken) {
 	copiedData.item_type = 'discussion';
 	copiedData.entries = await paginate(getAPIEndpoint() + '/entries', '', authToken);
 
+	if (copiedData.assignment != null && copiedData.assignment.rubric != null) {
+		copiedData.assignment.rubric_settings.title = encodeURIComponent(copiedData.assignment.rubric_settings.title);
+		for (var i = 0; i < copiedData.assignment.rubric.length; i++) {
+			copiedData.assignment.rubric[i].description = encodeURIComponent(copiedData.assignment.rubric[i].description);
+			copiedData.assignment.rubric[i].long_description = encodeURIComponent(copiedData.assignment.rubric[i].long_description);
+			for (var j = 0; j < copiedData.assignment.rubric[i].ratings.length; j++) {
+				copiedData.assignment.rubric[i].ratings[j].description = encodeURIComponent(copiedData.assignment.rubric[i].ratings[j].description);
+				copiedData.assignment.rubric[i].ratings[j].long_description = encodeURIComponent(copiedData.assignment.rubric[i].ratings[j].long_description);
+			}
+		}
+	}
+
 	chrome.storage.local.set({'copiedData': copiedData}, function() {
 		alert("Item Copied");
 	});
