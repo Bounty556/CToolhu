@@ -14,6 +14,7 @@ body {
 }
 
 #debugging {
+	position: relative;
 	display: none;
 	padding: 4px;
 	width: 280px;
@@ -34,6 +35,16 @@ body {
 	position: absolute;
 	bottom: 0px;
 	padding: 4px 0px;
+}
+
+#debugging #copyText {
+	position: absolute;
+	right: 0px;
+	top: 0px;
+}
+
+#debugging #copyText img {
+	width: 20px;
 }
 
 main {

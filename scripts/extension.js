@@ -16,6 +16,18 @@ document.getElementById('showCopied').addEventListener('click', function() {
 	updateLog(1000);
 });
 
+document.getElementById('copyText').addEventListener('click', function() {
+	const element = document.createElement('textarea');
+	element.value = document.getElementById('debugLog').innerHTML.replace(/<br>/g, '\n');
+	element.setAttribute('readonly', '');
+	element.style.position = 'absolute';
+	element.style.left = '-9999px';
+	document.body.appendChild(element);
+	element.select();
+	document.execCommand('copy');
+	document.body.removeChild(element);
+});
+
 async function updateLog(ms) {
 	if (ms != 0)
 		await sleep(ms);
