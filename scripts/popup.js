@@ -36,30 +36,20 @@ function verifyImagesHandler() {
 	});
 }
 
+function getClipboardHandler() {
+	chrome.tabs.executeScript(null, {
+		file: 'scripts/getClipboard.js'
+	});
+}
+
 // Add button listeners
-document.addEventListener('DOMContentLoaded', function () {
-	document.getElementById('setAuth').addEventListener('click', setAuth);
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-	document.getElementById('getAuth').addEventListener('click', getAuth);
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-	document.getElementById('clearMigrations').addEventListener('click', migrationsHandler);
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-	document.getElementById('splunkSearch').addEventListener('click', splunkHandler);
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-	document.getElementById('copy').addEventListener('click', copyHandler);
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-	document.getElementById('paste').addEventListener('click', pasteHandler);
-});
+document.getElementById('setAuth').addEventListener('click', setAuth);
+document.getElementById('getAuth').addEventListener('click', getAuth);
+document.getElementById('clearMigrations').addEventListener('click', migrationsHandler);
+document.getElementById('splunkSearch').addEventListener('click', splunkHandler);
+document.getElementById('copy').addEventListener('click', copyHandler);
+document.getElementById('paste').addEventListener('click', pasteHandler);
+document.getElementById('showCopied').addEventListener('click', getClipboardHandler);
 
 // Button functions
 function setAuth() {
