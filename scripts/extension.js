@@ -64,7 +64,7 @@ function createJSONObject(stack) {
 	stack.pop(); // Then, remove '}'
 
 	while (stack.length > 0) {
-		var line = stack.shift().split(':');
+		var line = stack.shift().split(/:(.+)?/);
 
 		var key = line[0].trim();
 

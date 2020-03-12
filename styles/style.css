@@ -52,6 +52,12 @@ main {
 	margin: 0px;
 }
 
+.version {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
+
 .heading {
 	display: flex;
 	width: 360px;
