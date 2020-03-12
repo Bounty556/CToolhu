@@ -16,7 +16,7 @@ function formatCopiedData(data) {
 function createEntry(object, tabs, string) {
 	string = string.concat(('  '.repeat(tabs)) + '{<br>');
 	
-	tabs += 1;
+	tabs++;
 
 	var entries = Object.entries(object);
 	for (var i = 0; i < entries.length; i++) {
@@ -44,7 +44,7 @@ function createEntry(object, tabs, string) {
 		}
 	}
 
-	tabs -= 1;
+	tabs--;
 
 	string = string.concat(('  '.repeat(tabs)) + '}<br>');
 

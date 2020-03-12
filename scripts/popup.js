@@ -49,7 +49,7 @@ document.getElementById('clearMigrations').addEventListener('click', migrationsH
 document.getElementById('splunkSearch').addEventListener('click', splunkHandler);
 document.getElementById('copy').addEventListener('click', copyHandler);
 document.getElementById('paste').addEventListener('click', pasteHandler);
-document.getElementById('showCopied').addEventListener('click', getClipboardHandler);
+document.getElementById('showClipboard').addEventListener('click', getClipboardHandler);
 
 // Button functions
 function setAuth() {
