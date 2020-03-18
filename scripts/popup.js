@@ -4,6 +4,10 @@ chrome.tabs.executeScript(null, {
 chrome.tabs.executeScript(null, {
 	file: 'scripts/utilities.js'
 });
+chrome.tabs.executeScript(null, {
+	file: 'scripts/jobsQueue.js'
+});
+
 
 // Functions to inject scripts
 function migrationsHandler() {
