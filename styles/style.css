@@ -13,11 +13,9 @@ body {
 	background-color: #eee;
 }
 
-#debugging {
-	position: relative;
-	display: none;
-	padding: 4px;
-	width: 280px;
+main {
+	width: 360px;
+	margin: 0px;
 }
 
 .scrollable {
@@ -37,21 +35,6 @@ body {
 	padding: 4px 0px;
 }
 
-#debugging #copyText {
-	position: absolute;
-	right: 0px;
-	top: 0px;
-}
-
-#debugging #copyText img {
-	width: 20px;
-}
-
-main {
-	width: 360px;
-	margin: 0px;
-}
-
 .version {
 	position: absolute;
 	top: 0px;
@@ -62,11 +45,6 @@ main {
 	display: flex;
 	width: 360px;
 	justify-content: center;
-}
-
-#ctoolhuImage {
-	width: 64px;
-	height: 64px;
 }
 
 .functions {
@@ -101,4 +79,32 @@ main {
 .functions button:active {
 	position: relative;
 	top: 1px;
+}
+
+#debugging {
+	position: relative;
+	display: none;
+	padding: 4px;
+	width: 280px;
+}
+
+#debugging #copyText {
+	position: absolute;
+	right: 0px;
+	top: 0px;
+}
+
+#debugging #copyText img {
+	width: 20px;
+}
+
+#masquerading {
+	display: none;
+	padding: 4px;
+	width: 280px;
+}
+
+#ctoolhuImage {
+	width: 64px;
+	height: 64px;
 }

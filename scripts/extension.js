@@ -1,12 +1,27 @@
 document.getElementById('ctoolhuImage').addEventListener('click', function() {
-	var display = document.getElementById('debugging').style.display;
+	var debugDisplay = document.getElementById('debugging');
+	var masqDisplay = document.getElementById('masquerading');
+	var miscText = document.getElementById('miscText');
 
-	if (display === 'block') {
-		document.getElementById('debugging').style.display = 'none';
+	if (debugDisplay.style.display === 'block') {
+		debugDisplay.style.display = 'none';
 	 } else {
 		updateLog(0);
-		document.getElementById('miscText').style.display = 'none';
-		document.getElementById('debugging').style.display = 'block';
+		miscText.style.display = 'none';
+		debugDisplay.style.display = 'block';
+		masqDisplay.style.display = 'none';
+	}
+});
+
+document.getElementById('masquerade').addEventListener('click', function() {
+	var debugDisplay = document.getElementById('debugging');
+	var masqDisplay = document.getElementById('masquerading');
+
+	if (masqDisplay.style.display === 'block') {
+		masqDisplay.style.display = 'none';
+	 } else {
+		masqDisplay.style.display = 'block';
+		debugDisplay.style.display = 'none';
 	}
 });
 
@@ -16,7 +31,7 @@ document.getElementById('showClipboard').addEventListener('click', function() {
 	updateLog(1000);
 });
 
-document.getElementById('saveToClipboard').addEventListener('click', function () {
+document.getElementById('saveToClipboard').addEventListener('click', function() {
 	// First turn what we have in the clipboard
 	var stack = document.getElementById('debugLog').innerText.split('\n');
 
@@ -32,15 +47,7 @@ document.getElementById('saveToClipboard').addEventListener('click', function ()
 });
 
 document.getElementById('copyText').addEventListener('click', function() {
-	const element = document.createElement('textarea');
-	element.value = document.getElementById('debugLog').innerHTML.replace(/<br>/g, '\n');
-	element.setAttribute('readonly', '');
-	element.style.position = 'absolute';
-	element.style.left = '-9999px';
-	document.body.appendChild(element);
-	element.select();
-	document.execCommand('copy');
-	document.body.removeChild(element);
+	copyText();
 });
 
 async function updateLog(ms) {
@@ -51,6 +58,18 @@ async function updateLog(ms) {
 	 	document.getElementById('debugLog').innerHTML = data.ctoolhuClipboard;
 		document.getElementById('miscText').style.display = 'none';
 	});
+}
+
+function copyText() {
+	const element = document.createElement('textarea');
+	element.value = document.getElementById('debugLog').innerHTML.replace(/<br>/g, '\n');
+	element.setAttribute('readonly', '');
+	element.style.position = 'absolute';
+	element.style.left = '-9999px';
+	document.body.appendChild(element);
+	element.select();
+	document.execCommand('copy');
+	document.body.removeChild(element);
 }
 
 function sleep(ms) {
