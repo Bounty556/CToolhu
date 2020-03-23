@@ -12,7 +12,7 @@
 	<!-- Debugging on the left -->
 	<section id='debugging'>
 		<button id='copyText'><img src='res/Copy.png' alt='copy'/></button>
-		<div class='scrollable preformatted' id='debugLog' contenteditable="true"> 
+		<div class='scrollable preformatted' id='debugLog' contenteditable='true'> 
 		</div>
 		<div class='debugTray'>
 			<p class='preformatted' id='miscText'>
@@ -24,17 +24,40 @@
 	</section>
 
 	<section id='masquerading'>
-		<!-- ADD BUTTONS AND SHIT -->
+		<div id='currentlyMasquerading'>
+			<img id='masqueradeImage' src='https://via.placeholder.com/150'>
+
+			<p>Name</p>
+			<p>Role</p>
+			<p>ID</p>
+			<p>SIS</p>
+			<p>User Page</p>
+			<p>Masquerade Link</p>
+		</div>
+		<div class='styledButtons' id='masqueradeButtons'>
+			<input type='radio' id='admin' name='role' value='admin' checked>
+			<label for='admin'>Admin</label> <br />
+			<input type='radio' id='teacher' name='role' value='teacher' checked>
+			<label for='teacher'>Teacher</label> <br />
+			<input type='radio' id='student' name='role' value='student' checked>
+			<label for='student'>Student</label> <br />
+			<input type='radio' id='observer' name='role' value='observer' checked>
+			<label for='observer'>Observer</label> <br />
+			<input type='radio' id='ta' name='role' value='ta' checked>
+			<label for='ta'>TA</label> <br />
+
+			<button id='actAsRandom'>Act As Random...</button>
+		</div>
 	</section>
 
 	<!-- Main buttons on the right -->
 	<main>
-		<p class="preformatted version">v0.6.3</p>
+		<p class='preformatted version'>v0.6.3</p>
 		<div class='heading'>
 			<img id='ctoolhuImage' src='res/Cthulhu.jpg' alt='Baby CToolhu'/>
 		</div>
 
-		<div class='functions'>
+		<div class='styledButtons functions'>
 			<button id='setAuth'>Set Auth Token</button>
 			<button id='getAuth'>Check Auth Token</button>
 			<button id='clearMigrations'>Clear Content Migrations</button>

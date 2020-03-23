@@ -53,7 +53,7 @@ main {
 	margin: 0px;
 }
 
-.functions button {
+.styledButtons button {
 	box-shadow: inset 0px 0px 17px -2px #3e7327;
 	background: linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
 	background-color: #77b55a;
@@ -71,14 +71,24 @@ main {
 	width: 168px;
 	height: 56px;
 }
-.functions button:hover {
+.styledButtons button:hover {
 	box-shadow: inset 0px 0px 17px 2px #3e7327;
 	background: linear-gradient(to bottom, #72b352 5%, #77b55a 100%);
 	background-color: #72b352;
 }
-.functions button:active {
+.styledButtons button:active {
 	position: relative;
 	top: 1px;
+}
+
+#actAsRandom {
+	width: 100%;
+}
+
+#currentlyMasquerading::after {
+	display: block;
+	content: "";
+	clear: both;
 }
 
 #debugging {
@@ -99,9 +109,20 @@ main {
 }
 
 #masquerading {
+	position: relative;
 	display: none;
 	padding: 4px;
 	width: 280px;
+}
+
+#masqueradeButtons {
+	position: absolute;
+	width: 268px;
+	bottom: 0px;
+}
+
+#masqueradeImage {
+	float: right;
 }
 
 #ctoolhuImage {
