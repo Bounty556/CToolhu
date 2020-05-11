@@ -4,70 +4,69 @@ $('#showClipboard').on('click', showClipboard);
 $('#saveToClipboard').on('click', saveToClipboard);
 $('#copyText').on('click', copyClipboardText);
 
-function toggleDevConsole() {
-	let debugDisplay = $('#debugging');
-	let masqDisplay = $('#masquerading');
-	let miscText = $('#miscText');
-	
-	if (debugDisplay.css('display') === 'block') {
-		debugDisplay.css('display', 'none');
-	} else {
-		// Display whatever's currently on the clipboard
-		updateClipboard(0);
+function openDebugPanel() {
+	let debugDisplay = document.getElementById('debugging');
+	let masqDisplay = document.getElementById('masquerading');
+	let miscText = document.getElementById('miscText');
 
-		debugDisplay.css('display', 'block');
-		masqDisplay.css('display', 'none');
-		miscText.css('display', 'none');
-	}
-}
-
-function toggleMasqueradePanel() {
-	let debugDisplay = $('#debugging');
-	let masqDisplay = $('#masquerading');
-	
-	if (masqDisplay.css('display') === 'block') {
-		masqDisplay.css('display', 'none');
+	if (debugDisplay.style.display === 'block') {
+		debugDisplay.style.display = 'none';
 	 } else {
-		debugDisplay.css('display', 'none');
-		masqDisplay.css('display', 'block');
+		updateClipboard(0);
+		miscText.style.display = 'none';
+		debugDisplay.style.display = 'block';
+		masqDisplay.style.display = 'none';
 	}
 }
 
-function showClipboard() {
-	let miscText = $('#miscText');
+document.getElementById('masquerade').addEventListener('click', function() {
+	let debugDisplay = document.getElementById('debugging');
+	let masqDisplay = document.getElementById('masquerading');
 
-	miscText.text('Loading...');
-	miscText.css('display', 'block');
+	if (masqDisplay.style.display === 'block') {
+		masqDisplay.style.display = 'none';
+	 } else {
+		masqDisplay.style.display = 'block';
+		debugDisplay.style.display = 'none';
+	}
+});
+
+document.getElementById('showClipboard').addEventListener('click', function() {
+	document.getElementById('miscText').innerHTML = 'Loading...';
+	document.getElementById('miscText').style.display = 'block';
 	updateClipboard(1000);
-}
+});
 
-function saveToClipboard() {
+document.getElementById('saveToClipboard').addEventListener('click', function() {
 	// First turn what we have in the clipboard
-	let stack = $('#debugLog').text().split('\n');
-	
+	let stack = document.getElementById('debugLog').innerText.split('\n');
+
 	// Remove empty lines
 	stack = stack.filter(word => word.length > 0);
-	
+
 	let data = createJSONObject(stack);
-	
-	chrome.storage.local.set({'copiedData': data}, () => {
-		$('#miscText').css('display', 'block');
-		$('#miscText').text('Saved!');
+
+	chrome.storage.local.set({'copiedData': data}, function() {
+	 	document.getElementById('miscText').style.display = 'block';
+	 	document.getElementById('miscText').innerHTML = 'Saved!';
 	});
-}
+});
+
+document.getElementById('copyText').addEventListener('click', function() {
+	copyText();
+});
 
 async function updateClipboard(ms) {
 	if (ms != 0)
 		await sleep(ms);
 
-	chrome.storage.local.get(['ctoolhuClipboard'], data => {
-	 	$('#debugLog').html(data.ctoolhuClipboard);
-		$('#miscText').css('display', 'none');
+	chrome.storage.local.get(['ctoolhuClipboard'], function(data) {
+	 	document.getElementById('debugLog').innerHTML = data.ctoolhuClipboard;
+		document.getElementById('miscText').style.display = 'none';
 	});
 }
 
-// Copied code
-function copyClipboardText() {
+function copyText() {
 	const element = document.createElement('textarea');
 	element.value = document.getElementById('debugLog').innerHTML.replace(/<br>/g, '\n');
 	element.setAttribute('readonly', '');
@@ -115,7 +114,7 @@ function createJSONObject(stack) {
 			tempStack.push(stack.shift());
 			let bracketCount = 1;
 			while (bracketCount > 0) {
-				let tempLine = stack.shift();
+				var tempLine = stack.shift();
 				if (tempLine.includes('{')) {
 					bracketCount++;
 				} else if (tempLine.includes('}')) {

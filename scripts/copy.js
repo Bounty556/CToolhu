@@ -1,6 +1,6 @@
 chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
 	var authToken = data.ctoolhuAuthToken;
-	if (!authtoken) {
+	if (!authToken) {
 		alert('No auth token set');
 		return;
 	}
