@@ -1,66 +1,75 @@
-document.getElementById('ctoolhuImage').addEventListener('click', function() {
-	var debugDisplay = document.getElementById('debugging');
-	var masqDisplay = document.getElementById('masquerading');
-	var miscText = document.getElementById('miscText');
+$(document).ready(() => {
+	$('#ctoolhuImage').on('click', toggleDevConsole);
+	$('#masquerade').on('click', toggleMasqueradePanel);
+	$('#showClipboard').on('click', showClipboard);
+	$('#saveToClipboard').on('click', saveToClipboard);
+	$('#copyText').on('click', copyClipboardText);
+});
 
-	if (debugDisplay.style.display === 'block') {
-		debugDisplay.style.display = 'none';
-	 } else {
-		updateLog(0);
-		miscText.style.display = 'none';
-		debugDisplay.style.display = 'block';
-		masqDisplay.style.display = 'none';
+function toggleDevConsole() {
+	let debugDisplay = $('#debugging');
+	let masqDisplay = $('#masquerading');
+	let miscText = $('#miscText');
+	
+	if (debugDisplay.css('display') === 'block') {
+		debugDisplay.css('display', 'none');
+	} else {
+		// Display whatever's currently on the clipboard
+		updateClipboard(0);
+
+		debugDisplay.css('display', 'block');
+		masqDisplay.css('display', 'none');
+		miscText.css('display', 'none');
 	}
-});
+}
 
-document.getElementById('masquerade').addEventListener('click', function() {
-	var debugDisplay = document.getElementById('debugging');
-	var masqDisplay = document.getElementById('masquerading');
-
-	if (masqDisplay.style.display === 'block') {
-		masqDisplay.style.display = 'none';
+function toggleMasqueradePanel() {
+	let debugDisplay = $('#debugging');
+	let masqDisplay = $('#masquerading');
+	
+	if (masqDisplay.css('display') === 'block') {
+		masqDisplay.css('display', 'none');
 	 } else {
-		masqDisplay.style.display = 'block';
-		debugDisplay.style.display = 'none';
+		debugDisplay.css('display', 'none');
+		masqDisplay.css('display', 'block');
 	}
-});
+}
 
-document.getElementById('showClipboard').addEventListener('click', function() {
-	document.getElementById('miscText').innerHTML = 'Loading...';
-	document.getElementById('miscText').style.display = 'block';
-	updateLog(1000);
-});
+function showClipboard() {
+	let miscText = $('#miscText');
 
-document.getElementById('saveToClipboard').addEventListener('click', function() {
+	miscText.text('Loading...');
+	miscText.css('display', 'block');
+	updateClipboard(1000);
+}
+
+function saveToClipboard() {
 	// First turn what we have in the clipboard
-	var stack = document.getElementById('debugLog').innerText.split('\n');
-
+	let stack = $('#debugLog').text().split('\n');
+	
 	// Remove empty lines
 	stack = stack.filter(word => word.length > 0);
-
-	var data = createJSONObject(stack);
-
-	chrome.storage.local.set({'copiedData': data}, function() {
-	 	document.getElementById('miscText').style.display = 'block';
-	 	document.getElementById('miscText').innerHTML = 'Saved!';
-	});
-});
-
-document.getElementById('copyText').addEventListener('click', function() {
-	copyText();
-});
-
-async function updateLog(ms) {
-	if (ms != 0)
-		await sleep(ms);
-
-	chrome.storage.local.get(['ctoolhuClipboard'], function(data) {
-	 	document.getElementById('debugLog').innerHTML = data.ctoolhuClipboard;
-		document.getElementById('miscText').style.display = 'none';
+	
+	let data = createJSONObject(stack);
+	
+	chrome.storage.local.set({'copiedData': data}, () => {
+		$('#miscText').css('display', 'block');
+		$('#miscText').text('Saved!');
 	});
 }
 
-function copyText() {
+async function updateClipboard(ms) {
+	if (ms != 0)
+		await sleep(ms);
+
+	chrome.storage.local.get(['ctoolhuClipboard'], data => {
+	 	$('#debugLog').html(data.ctoolhuClipboard);
+		$('#miscText').css('display', 'none');
+	});
+}
+
+// Copied code
+function copyClipboardText() {
 	const element = document.createElement('textarea');
 	element.value = document.getElementById('debugLog').innerHTML.replace(/<br>/g, '\n');
 	element.setAttribute('readonly', '');
@@ -78,18 +87,18 @@ function sleep(ms) {
 
 // Take JSON object formatted as string and turn into JSON object
 function createJSONObject(stack) {
-	var object = {};
+	let object = {};
 	stack.shift(); // First, remove excess '{'
 	stack.pop(); // Then, remove '}'
 
 	while (stack.length > 0) {
-		var line = stack.shift().split(/:(.+)?/);
+		let line = stack.shift().split(/:(.+)?/);
 
-		var key = line[0].trim();
+		let key = line[0].trim();
 
 		// If there is nothing past 'key:' then, the next line should be a '{', so this is an object
-		var value = (line[1] == null || line[1].trim() == '') ? 'object' : line[1].trim();
-		var stringRegex = /^".+"$/;
+		let value = (line[1] == null || line[1].trim() == '') ? 'object' : line[1].trim();
+		let stringRegex = /^".+"$/;
 
 		// This is a string!
 		if (value.match(stringRegex)) {
@@ -104,11 +113,11 @@ function createJSONObject(stack) {
 			value = +value;
 		} else if (value.toLowerCase() === 'object') {
 			// Remove lines from stack associated with object
-			var tempStack = [];
+			let tempStack = [];
 			tempStack.push(stack.shift());
-			var bracketCount = 1;
+			let bracketCount = 1;
 			while (bracketCount > 0) {
-				var tempLine = stack.shift();
+				let tempLine = stack.shift();
 				if (tempLine.includes('{')) {
 					bracketCount++;
 				} else if (tempLine.includes('}')) {
