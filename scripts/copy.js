@@ -1,6 +1,6 @@
 chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
 	var authToken = data.ctoolhuAuthToken;
-	if (typeof authToken === 'undefined' || authToken == null) {
+	if (!authtoken) {
 		alert('No auth token set');
 		return;
 	}
@@ -22,20 +22,29 @@ chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
 		alert("Not a valid item to copy");
 });
 
+// Grabs the assignment object anad stores it in copiedData.
 async function copyAssignment(authToken) {
-	copiedData = await paginate(getAPIEndpoint(), '', authToken);
+	let copiedData = await paginate(getAPIEndpoint(), '', authToken);
 	copiedData.item_type = 'assignment';
 
-	if (copiedData.rubric != null) {
+	// If this assignment has a rubric
+
+	if (copiedData.rubric) {
 		copiedData.rubric_settings.title = encodeURIComponent(copiedData.rubric_settings.title);
-		for (var i = 0; i < copiedData.rubric.length; i++) {
-			copiedData.rubric[i].description = encodeURIComponent(copiedData.rubric[i].description);
-			copiedData.rubric[i].long_description = encodeURIComponent(copiedData.rubric[i].long_description);
-			for (var j = 0; j < copiedData.rubric[i].ratings.length; j++) {
-				copiedData.rubric[i].ratings[j].description = encodeURIComponent(copiedData.rubric[i].ratings[j].description);
-				copiedData.rubric[i].ratings[j].long_description = encodeURIComponent(copiedData.rubric[i].ratings[j].long_description);
-			}
-		}
+
+		copiedData.rubric.map(criterion => {
+			criterion.description = encodeURIComponent(criterion.description);
+			criterion.long_description = encodeURIComponent(criterion.long_description);
+	
+			criterion.ratings.map(rating => {
+				rating.description = encodeURIComponent(rating.description);
+				rating.long_description = encodeURIComponent(rating.long_description);
+				
+				return rating;
+			});
+	
+			return criterion;
+		});
 	}
 	
 	chrome.storage.local.set({'copiedData': copiedData}, function() {
@@ -43,22 +52,32 @@ async function copyAssignment(authToken) {
 	});
 }
 
+// Grabs the discussion object and stores it in copiedData
 async function copyDiscussion(authToken) {
-	var copiedData = await paginate(getAPIEndpoint(), '', authToken);
+	let copiedData = await paginate(getAPIEndpoint(), '', authToken);
 
 	copiedData.item_type = 'discussion';
-	copiedData.entries = await paginate(getAPIEndpoint() + '/entries', '', authToken);
 
-	if (copiedData.assignment != null && copiedData.assignment.rubric != null) {
+	// Copy each of the discussion's entries
+	copiedData.entries = await paginate(`${getAPIEndpoint()}/entries`, '', authToken);
+
+	// If this discussion has an assoociated rubric
+	if (copiedData.assignment && copiedData.assignment.rubric) {
 		copiedData.assignment.rubric_settings.title = encodeURIComponent(copiedData.assignment.rubric_settings.title);
-		for (var i = 0; i < copiedData.assignment.rubric.length; i++) {
-			copiedData.assignment.rubric[i].description = encodeURIComponent(copiedData.assignment.rubric[i].description);
-			copiedData.assignment.rubric[i].long_description = encodeURIComponent(copiedData.assignment.rubric[i].long_description);
-			for (var j = 0; j < copiedData.assignment.rubric[i].ratings.length; j++) {
-				copiedData.assignment.rubric[i].ratings[j].description = encodeURIComponent(copiedData.assignment.rubric[i].ratings[j].description);
-				copiedData.assignment.rubric[i].ratings[j].long_description = encodeURIComponent(copiedData.assignment.rubric[i].ratings[j].long_description);
-			}
-		}
+
+		copiedData.assignment.rubric.map(criterion => {
+			criterion.description = encodeURIComponent(criterion.description);
+			criterion.long_description = encodeURIComponent(criterion.long_description);
+	
+			criterion.ratings.map(rating => {
+				rating.description = encodeURIComponent(rating.description);
+				rating.long_description = encodeURIComponent(rating.long_description);
+				
+				return rating;
+			});
+	
+			return criterion;
+		});
 	}
 
 	chrome.storage.local.set({'copiedData': copiedData}, function() {
@@ -66,8 +85,9 @@ async function copyDiscussion(authToken) {
 	});
 }
 
+// Grabs the page object and stores it in copiedData
 async function copyPage(authToken) {
-	var copiedData = await paginate(getAPIEndpoint(), '', authToken);
+	let copiedData = await paginate(getAPIEndpoint(), '', authToken);
 
 	copiedData.item_type = 'page';
 	copiedData.title = encodeURIComponent(copiedData.title);
@@ -81,38 +101,50 @@ async function copyPage(authToken) {
 	alert("Item Copied");
 }
 
+// Grabs the quiz object and stores it in copiedData
 async function copyQuiz(authToken) {
 	var copiedData = await paginate(getAPIEndpoint(), '', authToken);
 
 	copiedData.item_type = 'quiz';
-	copiedData.questions = await paginate(getAPIEndpoint() + '/questions', '', authToken);
-	copiedData.questionGroups = [];
 
-	for (var i = 0; i < copiedData.questions.length; i++) {
-		if (copiedData.questions[i].quiz_group_id != null) {
-			var group = await paginate(getAPIEndpoint() + '/groups/' + copiedData.questions[i].quiz_group_id, '', authToken);
-			copiedData.questionGroups.push(group);
+	// Grabs the questions in this quiz and stores them in copiedData.questions
+	copiedData.questions = await paginate(`${getAPIEndpoint()}/questions`, '', authToken);
+
+	// Grab all question groups in this quiz
+	let groupSet = new Set();
+	for (question of copiedData.questions) {
+		if (question.quiz_group_id) {
+			let group = await paginate(`${getAPIEndpoint()}/groups/${question.quiz_group_id}`, '', authToken);
+			groupSet.add(group);
 		}
 	}
+
+	copiedData.question_groups = [...groupSet];
 
 	chrome.storage.local.set({'copiedData': copiedData}, function() {
 		alert("Item Copied");
 	});
 }
 
+// Grabs a rubric object and stores it in copiedData
 async function copyRubric(authToken) {
 	var copiedData = await paginate(getAPIEndpoint(), '', authToken);
 
 	copiedData.item_type = 'rubric';
 
-	for (var i = 0; i < copiedData.data.length; i++) {
-		copiedData.data[i].description = encodeURIComponent(copiedData.data[i].description);
-		copiedData.data[i].long_description = encodeURIComponent(copiedData.data[i].long_description);
-		for (var j = 0; j < copiedData.data[i].ratings.length; j++) {
-			copiedData.data[i].ratings[j].description = encodeURIComponent(copiedData.data[i].ratings[j].description);
-			copiedData.data[i].ratings[j].long_description = encodeURIComponent(copiedData.data[i].ratings[j].long_description);
-		}
-	}
+	copiedData.data.map(criterion => {
+		criterion.description = encodeURIComponent(criterion.description);
+		criterion.long_description = encodeURIComponent(criterion.long_description);
+
+		criterion.ratings.map(rating => {
+			rating.description = encodeURIComponent(rating.description);
+			rating.long_description = encodeURIComponent(rating.long_description);
+			
+			return rating;
+		});
+
+		return criterion;
+	});
 	
 	chrome.storage.local.set({'copiedData': copiedData}, function() {
 		alert("Item Copied");
