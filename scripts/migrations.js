@@ -1,6 +1,6 @@
 chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
-	var authToken = data.ctoolhuAuthToken;
-	if (typeof authToken === 'undefined' || authToken == null) {
+	let authToken = data.ctoolhuAuthToken;
+	if (!authToken) {
 		alert('No auth token set');
 		return;
 	}
@@ -16,13 +16,11 @@ chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
 });
 
 async function clearMigrations(authToken) {
-	var migrationObjects = await paginate(getAPIEndpoint(), '', authToken);
+	let migrationObjects = await paginate(getAPIEndpoint(), '', authToken);
 
-	for (var i = 0; i < migrationObjects.length; i++)
-	{
-		if (migrationObjects[i].workflow_state == 'pre_processing')
-		{
-			apiCall(getAPIEndpoint() + '/' + migrationObjects[i].id, 'PUT', '', authToken);
+	for (migration of migrationObjects) {
+		if (migration.workflow_state === 'pre_processing') {
+			apiCall(`${getAPIEndpoint()}/${migration.id}`, 'PUT', '', authToken);
 		}
 	}
 
