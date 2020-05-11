@@ -1,21 +1,23 @@
-document.getElementById('ctoolhuImage').addEventListener('click', function() {
-	var debugDisplay = document.getElementById('debugging');
-	var masqDisplay = document.getElementById('masquerading');
-	var miscText = document.getElementById('miscText');
+$('#ctoolhuImage').on('click', openDebugPanel);
+
+function openDebugPanel() {
+	let debugDisplay = document.getElementById('debugging');
+	let masqDisplay = document.getElementById('masquerading');
+	let miscText = document.getElementById('miscText');
 
 	if (debugDisplay.style.display === 'block') {
 		debugDisplay.style.display = 'none';
 	 } else {
-		updateLog(0);
+		updateClipboard(0);
 		miscText.style.display = 'none';
 		debugDisplay.style.display = 'block';
 		masqDisplay.style.display = 'none';
 	}
-});
+}
 
 document.getElementById('masquerade').addEventListener('click', function() {
-	var debugDisplay = document.getElementById('debugging');
-	var masqDisplay = document.getElementById('masquerading');
+	let debugDisplay = document.getElementById('debugging');
+	let masqDisplay = document.getElementById('masquerading');
 
 	if (masqDisplay.style.display === 'block') {
 		masqDisplay.style.display = 'none';
@@ -28,17 +30,17 @@ document.getElementById('masquerade').addEventListener('click', function() {
 document.getElementById('showClipboard').addEventListener('click', function() {
 	document.getElementById('miscText').innerHTML = 'Loading...';
 	document.getElementById('miscText').style.display = 'block';
-	updateLog(1000);
+	updateClipboard(1000);
 });
 
 document.getElementById('saveToClipboard').addEventListener('click', function() {
 	// First turn what we have in the clipboard
-	var stack = document.getElementById('debugLog').innerText.split('\n');
+	let stack = document.getElementById('debugLog').innerText.split('\n');
 
 	// Remove empty lines
 	stack = stack.filter(word => word.length > 0);
 
-	var data = createJSONObject(stack);
+	let data = createJSONObject(stack);
 
 	chrome.storage.local.set({'copiedData': data}, function() {
 	 	document.getElementById('miscText').style.display = 'block';
@@ -50,7 +52,7 @@ document.getElementById('copyText').addEventListener('click', function() {
 	copyText();
 });
 
-async function updateLog(ms) {
+async function updateClipboard(ms) {
 	if (ms != 0)
 		await sleep(ms);
 
@@ -78,18 +80,18 @@ function sleep(ms) {
 
 // Take JSON object formatted as string and turn into JSON object
 function createJSONObject(stack) {
-	var object = {};
+	let object = {};
 	stack.shift(); // First, remove excess '{'
 	stack.pop(); // Then, remove '}'
 
 	while (stack.length > 0) {
-		var line = stack.shift().split(/:(.+)?/);
+		let line = stack.shift().split(/:(.+)?/);
 
-		var key = line[0].trim();
+		let key = line[0].trim();
 
 		// If there is nothing past 'key:' then, the next line should be a '{', so this is an object
-		var value = (line[1] == null || line[1].trim() == '') ? 'object' : line[1].trim();
-		var stringRegex = /^".+"$/;
+		let value = (line[1] == null || line[1].trim() == '') ? 'object' : line[1].trim();
+		let stringRegex = /^".+"$/;
 
 		// This is a string!
 		if (value.match(stringRegex)) {
@@ -104,9 +106,9 @@ function createJSONObject(stack) {
 			value = +value;
 		} else if (value.toLowerCase() === 'object') {
 			// Remove lines from stack associated with object
-			var tempStack = [];
+			let tempStack = [];
 			tempStack.push(stack.shift());
-			var bracketCount = 1;
+			let bracketCount = 1;
 			while (bracketCount > 0) {
 				var tempLine = stack.shift();
 				if (tempLine.includes('{')) {
