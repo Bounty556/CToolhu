@@ -1,10 +1,8 @@
-$(document).ready(() => {
-	$('#ctoolhuImage').on('click', toggleDevConsole);
-	$('#masquerade').on('click', toggleMasqueradePanel);
-	$('#showClipboard').on('click', showClipboard);
-	$('#saveToClipboard').on('click', saveToClipboard);
-	$('#copyText').on('click', copyClipboardText);
-});
+$('#ctoolhuImage').on('click', toggleDevConsole);
+$('#masquerade').on('click', toggleMasqueradePanel);
+$('#showClipboard').on('click', showClipboard);
+$('#saveToClipboard').on('click', saveToClipboard);
+$('#copyText').on('click', copyClipboardText);
 
 function toggleDevConsole() {
 	let debugDisplay = $('#debugging');
