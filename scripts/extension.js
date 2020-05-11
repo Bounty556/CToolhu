@@ -4,42 +4,42 @@ $('#showClipboard').on('click', showClipboard);
 $('#saveToClipboard').on('click', saveToClipboard);
 $('#copyText').on('click', copyClipboardText);
 
-function openDebugPanel() {
-	let debugDisplay = document.getElementById('debugging');
-	let masqDisplay = document.getElementById('masquerading');
-	let miscText = document.getElementById('miscText');
+function toggleDevConsole() {
+	let debugDisplay = $('#debugging');
+	let masqDisplay = $('#masquerading');
+	let miscText = $('#miscText');
 
-	if (debugDisplay.style.display === 'block') {
-		debugDisplay.style.display = 'none';
+	if (debugDisplay.css('display') === 'block') {
+		debugDisplay.css('display', 'none');
 	 } else {
 		updateClipboard(0);
-		miscText.style.display = 'none';
-		debugDisplay.style.display = 'block';
-		masqDisplay.style.display = 'none';
+		debugDisplay.css('display', 'block');
+		miscText.css('display', 'none');
+		masqDisplay.css('display', 'none');
 	}
 }
 
-document.getElementById('masquerade').addEventListener('click', function() {
-	let debugDisplay = document.getElementById('debugging');
-	let masqDisplay = document.getElementById('masquerading');
-
-	if (masqDisplay.style.display === 'block') {
-		masqDisplay.style.display = 'none';
+function toggleMasqueradePanel() {
+	let debugDisplay = $('#debugging');
+	let masqDisplay = $('#masquerading');
+	
+	if (masqDisplay.css('display') === 'block') {
+		masqDisplay.css('display', 'none');
 	 } else {
-		masqDisplay.style.display = 'block';
-		debugDisplay.style.display = 'none';
+		masqDisplay.css('display', 'block');
+		debugDisplay.css('display', 'none');
 	}
-});
+}
 
-document.getElementById('showClipboard').addEventListener('click', function() {
-	document.getElementById('miscText').innerHTML = 'Loading...';
-	document.getElementById('miscText').style.display = 'block';
+function showClipboard() {
+	$('#miscText').text('Loading...');
+	$('#miscText').css('display', 'block');
 	updateClipboard(1000);
-});
+}
 
-document.getElementById('saveToClipboard').addEventListener('click', function() {
+function saveToClipboard() {
 	// First turn what we have in the clipboard
-	let stack = document.getElementById('debugLog').innerText.split('\n');
+	let stack = $('#debugLog').text().split('\n');
 
 	// Remove empty lines
 	stack = stack.filter(word => word.length > 0);
@@ -47,14 +47,10 @@ document.getElementById('saveToClipboard').addEventListener('click', function() 
 	let data = createJSONObject(stack);
 
 	chrome.storage.local.set({'copiedData': data}, function() {
-	 	document.getElementById('miscText').style.display = 'block';
-	 	document.getElementById('miscText').innerHTML = 'Saved!';
+		$('#miscText').css('display', 'block');
+		$('#miscText').text('Saved!');
 	});
-});
-
-document.getElementById('copyText').addEventListener('click', function() {
-	copyText();
-});
+}
 
 async function updateClipboard(ms) {
 	if (ms != 0)
@@ -66,7 +62,8 @@ async function updateClipboard(ms) {
 	});
 }
 
-function copyText() {
+// Copied code
+function copyClipboardText() {
 	const element = document.createElement('textarea');
 	element.value = document.getElementById('debugLog').innerHTML.replace(/<br>/g, '\n');
 	element.setAttribute('readonly', '');
