@@ -57,7 +57,7 @@ document.getElementById('showClipboard').addEventListener('click', getClipboardH
 
 // Button functions
 function setAuth() {
-	var tempAuth = prompt('Please enter your authToken:', '');
+	let tempAuth = prompt('Please enter your authToken:', '');
 
 	if (tempAuth != null)
 	{
@@ -69,7 +69,7 @@ function setAuth() {
 
 function getAuth() {
 	chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
-		var authToken = data.ctoolhuAuthToken;
+		let authToken = data.ctoolhuAuthToken;
 		if (typeof authToken === 'undefined' || authToken == null) {
 			alert('No auth token set');
 		} else {

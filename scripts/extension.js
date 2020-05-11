@@ -57,8 +57,8 @@ async function updateClipboard(ms) {
 		await sleep(ms);
 
 	chrome.storage.local.get(['ctoolhuClipboard'], function(data) {
-	 	document.getElementById('debugLog').innerHTML = data.ctoolhuClipboard;
-		document.getElementById('miscText').style.display = 'none';
+	 	$('#debugLog').html(data.ctoolhuClipboard);
+		$('#miscText').css('display', 'none');
 	});
 }
 

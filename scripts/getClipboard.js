@@ -1,52 +1,50 @@
 chrome.storage.local.get(['copiedData'], function(data) {
-	if (data != null) {
-		formatCopiedData(data);
+	if (data) {
+		formatCopiedData(data.copiedData);
 	}
 });
 
-function formatCopiedData(data) {
-	var formatted = '';
-	var copiedData = data.copiedData;
+function formatCopiedData(copiedData) {
+	let formatted = createEntry(copiedData, 0, '');
 
-	formatted = formatted.concat(createEntry(copiedData, 0, ''));
-
-	chrome.storage.local.set({'ctoolhuClipboard': formatted}, function() {});
+	chrome.storage.local.set({'ctoolhuClipboard': formatted}, () => {});
 }
 
 function createEntry(object, tabs, string) {
-	string = string.concat(('  '.repeat(tabs)) + '{<br>');
+	string += `${'  '.repeat(tabs)}{<br />`;
 	
 	tabs++;
 
-	var entries = Object.entries(object);
-	for (var i = 0; i < entries.length; i++) {
-		string = string.concat(('  '.repeat(tabs)) + entries[i][0] + ': ');
+	let entries = Object.entries(object);
+	for (entry of entries) {
+		string += `${'  '.repeat(tabs)}${entry[0]}: `;
 
-		switch (typeof entries[i][1]) {
+		switch (typeof entry[1]) {
 			case 'object':
-				if (entries[i][1] === null || entries[i][1]  === undefined) {
-					string = string.concat(entries[i][1] + '<br>');
+				if (entry[1]) {
+					string += '<br />';
+					string = createEntry(entry[1], tabs, string);
 				} else {
-					string = string.concat('<br>');
-					string = createEntry(entries[i][1], tabs, string);
+					string += `${entry[1]}<br />`;
 				}
 				break;
-
+			
 			case 'string':
-				var temp = entries[i][1].replace(/</g,'&#60;');
+				// Replace < and > with their escaped versions
+				let temp = entry[1].replace(/</g,'&#60;');
 				temp = temp.replace(/>/g,'&#62;');
-				string = string.concat('"' + temp + '"<br>');
+				string += `"${temp}"<br />`;
 				break;
 
 			default:
-				string = string.concat(entries[i][1] + '<br>');
+				string += `${entry[1]}<br />`;
 				break;
 		}
 	}
 
 	tabs--;
 
-	string = string.concat(('  '.repeat(tabs)) + '}<br>');
+	string += `${'  '.repeat(tabs)}}<br />`;
 
 	return string;
 }
