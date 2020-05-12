@@ -19,16 +19,35 @@ A Chrome Extension used by the Canvas Support team to automate miscellaneous tas
 * Splunk Search
 > Begins a new Splunk search based on the current page you're on in Canvas. Will work for any page, including API pages. If you are currently masquerading as a user, the search will be configured to look for only interactions from that specific user. By default, the search will include all forms of interactions except for: Pings, Page View Loads, and Unread Count calls.
 * Copy/Paste
-> Adds the ability to copy entire items in Canvas, and paste them wherever you would like. For instance, if you needed to test a quiz that had specific settings and question types, you can copy that quiz, and then paste it in your course. Currently, Assignments, Quizzes, Discussions, Pages, Announcements, and Rubrics are supported.
+> Adds the ability to copy entire items in Canvas, and paste them wherever you would like. For instance, if you needed to test a quiz that had specific settings and question types, you can copy that quiz, and then paste it in your course.
 * Act as a random user
 > WIP...
 
+## Copy/Paste Tool
+
+This tool currently works with the following items:
+* Assignments
+* Quizzes
+* Pages
+* Discussions
+* Announcements
+* Rubrics
+
+When copying Assignments, it's important to note that external tool assignments can not be copied. This includes Quizzes.Next assignments.
+
+When copying Discussions, all of the discussion replies will be put in your name, and only up to the first 100 replies on a discussion will be copied/pasted.
+
+When copying Quizzes, only the first 100 questions will be copied/pasted. Question groups are supported, as long as they do not pull from a question bank. Question groups that pull from question banks are not stored in any retrievable way in the API for a quiz, and thus can not be copied/pasted.
 
 ## Contributing
 
 Pull requests are always welcome! If it is anything more than a minor bug fix, please open an issue first to discuss the changes you would like to make.
 
 ALWAYS test, test, and test some more.
+
+## Tests
+
+Tests are currently in the works for CToolhu, but are planned to be created using the Jest package for Node.
 
 ## License
 

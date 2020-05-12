@@ -1,11 +1,11 @@
 chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
-	var authToken = data.ctoolhuAuthToken;
+	const authToken = data.ctoolhuAuthToken;
 	if (!authToken) {
 		alert('No auth token set');
 		return;
 	}
 
-	var url = document.URL;
+	const url = document.URL;
 
 	// Find out what item type we're trying to copy, and run the appropriate function
 	if (/courses\/\d+\/assignments\/\d+/.test(url))
@@ -32,11 +32,11 @@ async function copyAssignment(authToken) {
 	if (copiedData.rubric) {
 		copiedData.rubric_settings.title = encodeURIComponent(copiedData.rubric_settings.title);
 
-		copiedData.rubric.map(criterion => {
+		copiedData.rubric = copiedData.rubric.map(criterion => {
 			criterion.description = encodeURIComponent(criterion.description);
 			criterion.long_description = encodeURIComponent(criterion.long_description);
 	
-			criterion.ratings.map(rating => {
+			criterion.ratings = criterion.ratings.map(rating => {
 				rating.description = encodeURIComponent(rating.description);
 				rating.long_description = encodeURIComponent(rating.long_description);
 				
@@ -65,11 +65,11 @@ async function copyDiscussion(authToken) {
 	if (copiedData.assignment && copiedData.assignment.rubric) {
 		copiedData.assignment.rubric_settings.title = encodeURIComponent(copiedData.assignment.rubric_settings.title);
 
-		copiedData.assignment.rubric.map(criterion => {
+		copiedData.assignment.rubric = copiedData.assignment.rubric.map(criterion => {
 			criterion.description = encodeURIComponent(criterion.description);
 			criterion.long_description = encodeURIComponent(criterion.long_description);
 	
-			criterion.ratings.map(rating => {
+			criterion.ratings = criterion.ratings.map(rating => {
 				rating.description = encodeURIComponent(rating.description);
 				rating.long_description = encodeURIComponent(rating.long_description);
 				
@@ -103,7 +103,7 @@ async function copyPage(authToken) {
 
 // Grabs the quiz object and stores it in copiedData
 async function copyQuiz(authToken) {
-	var copiedData = await paginate(getAPIEndpoint(), '', authToken);
+	let copiedData = await paginate(getAPIEndpoint(), '', authToken);
 
 	copiedData.item_type = 'quiz';
 
@@ -114,7 +114,7 @@ async function copyQuiz(authToken) {
 	let groupSet = new Set();
 	for (question of copiedData.questions) {
 		if (question.quiz_group_id) {
-			let group = await paginate(`${getAPIEndpoint()}/groups/${question.quiz_group_id}`, '', authToken);
+			const group = await paginate(`${getAPIEndpoint()}/groups/${question.quiz_group_id}`, '', authToken);
 			groupSet.add(group);
 		}
 	}
