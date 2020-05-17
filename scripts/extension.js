@@ -3,6 +3,7 @@ $('#masquerade').on('click', toggleMasqueradePanel);
 $('#showClipboard').on('click', showClipboard);
 $('#saveToClipboard').on('click', saveToClipboard);
 $('#copyText').on('click', copyClipboardText);
+$('input[name="role"]').on('click', toggleMasqueradeButtons);
 
 function toggleDevConsole() {
 	let debugDisplay = $('#debugging');
@@ -26,6 +27,9 @@ function toggleMasqueradePanel() {
 	if (masqDisplay.css('display') === 'block') {
 		masqDisplay.css('display', 'none');
 	 } else {
+		// Update masquerading data
+		chrome.tabs.query({active: true, currentWindow: true}, updateMasqueradingData);
+
 		masqDisplay.css('display', 'block');
 		debugDisplay.css('display', 'none');
 	}
@@ -73,6 +77,55 @@ function copyClipboardText() {
 	element.select();
 	document.execCommand('copy');
 	document.body.removeChild(element);
+}
+
+function toggleMasqueradeButtons() {
+	if ($(this).val() != 'admin') {
+		$('#includedAdminRoles').hide();
+	} else {
+		$('#includedAdminRoles').show();
+	}
+}
+
+function updateMasqueradingData(tabs) {
+	const domain = tabs[0].url.match(/(https?:\/\/[^/]+)\//)[1];
+
+	chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
+		const authToken = data.ctoolhuAuthToken;
+		if (!authToken) {
+			return;
+		}
+		$.ajax({
+			url: domain,
+			method: 'GET',
+			beforeSend: xhr => {
+				xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+			}
+		}).then((data, textStatus, jqxhr) => {
+			const masquerading = /users\/\d+\/masquerade/g.test(jqxhr.responseText);
+
+			if (masquerading) {
+				const currentUser = jqxhr.responseText.match(/"current_user_id":"([^"]+)/)[1];
+				
+				$.ajax({
+					url: `${domain}/api/v1/users/${currentUser}?include[]=sis_user_id`,
+					method: 'GET',
+					beforeSend: xhr => {
+						xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+					}
+				}).then(data => {
+					// Update user info
+					$('#masqueradeName').text(data.name);
+					$('#masqueradeID').text(currentUser);
+					$('#masqueradeSIS').text(data.sis_user_id || '');
+					$('#masqueradeUserPage').attr('href', `${domain}/users/${currentUser}`);
+					$('#masqueradeImage').attr('src', data.avatar_url);
+
+					$('#currentlyMasquerading').show();
+				});
+			}
+		});
+   });
 }
 
 function sleep(ms) {

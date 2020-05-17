@@ -5,7 +5,7 @@ async function paginate(url, payload, authToken, nextLink = null) {
 	let call = $.ajax({
 		url: (nextLink) ? nextLink : `${url}?per_page=100&${payload}`,
 		method: 'GET',
-		beforeSend : (xhr) => {
+		beforeSend : xhr => {
 			xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
 		}
 	}).then((data, textStatus, jqXHR) => {

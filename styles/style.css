@@ -90,6 +90,10 @@ main {
 	height: 64px;
 }
 
+#currentlyMasquerading {
+	display: none;
+}
+
 #currentlyMasquerading::after {
 	display: block;
 	content: "";
@@ -119,6 +123,11 @@ main {
 	bottom: 0px;
 }
 
+#masqueradeInfo {
+	width: 140px;
+	overflow: hidden;
+}
+
 #masquerading {
 	position: relative;
 	display: none;
@@ -128,6 +137,7 @@ main {
 
 #masqueradeImage {
 	float: right;
+	height: 132px;
 }
 
 #masqueradeRoles {

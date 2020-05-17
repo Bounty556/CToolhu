@@ -400,9 +400,9 @@ async function pasteRubric(copiedData, courseID, authToken) {
 		currentCriterion++;
 	}
 
-	apiCall(`${document.location.origin}/api/v1/courses/${courseID}/rubrics`, 'POST', payload, authToken);
-
 	console.log(payload);
+	
+	await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/rubrics`, 'POST', payload, authToken);
 
 	alert("Done!");
 }

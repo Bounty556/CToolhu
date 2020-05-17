@@ -86,6 +86,9 @@ function actAsUser(id) {
 async function getAdminsInAccount(account, findAllRoleTypes, authToken) {
     let tempList = await paginate(`${document.location.origin}/api/v1/accounts/${account}/admins`, '', authToken);
 
+    // We don't want API, SIS, or Jenzabar admins
+    tempList = tempList.filter(adminObj => !/(API)|(SIS)|(Jenzabar)/.test(adminObj.user.name));
+
     if (findAllRoleTypes) {
         // We only care about the User IDs
         tempList = tempList.map(adminObj => adminObj.user.id);
@@ -100,10 +103,10 @@ async function getAdminsInAccount(account, findAllRoleTypes, authToken) {
 async function findSubAccountNumber(authToken) {
     // Assume this is the right subaccount if we're in it
     if (/accounts\/\d+/.test(document.location.pathname)) {
-        let id = document.location.pathname.match(/accounts\/(\d+)/)[1];
+        const id = document.location.pathname.match(/accounts\/(\d+)/)[1];
 
         // Test to see if this is actually a subaccount
-        let accountAPI = await paginate(`${document.location.origin}/api/v1/accounts/${id}`, '', authToken);
+        const accountAPI = await paginate(`${document.location.origin}/api/v1/accounts/${id}`, '', authToken);
 
         if (accountAPI.root_account_id) {
             return id;
@@ -111,10 +114,10 @@ async function findSubAccountNumber(authToken) {
             return null;
         }
     } else if (/courses\/\d+/.test(document.location.pathname)) {
-        let courseID = document.location.pathname.match(/courses\/(\d+)/)[1];
+        const courseID = document.location.pathname.match(/courses\/(\d+)/)[1];
 
         // Get subaccount ID
-        let courseAPI = await paginate(`${document.location.origin}/api/v1/courses/${courseID}`, '', authToken);
+        const courseAPI = await paginate(`${document.location.origin}/api/v1/courses/${courseID}`, '', authToken);
 
         // This is not in a subaccount
         if (courseAPI.account_id === courseAPI.root_account_id) {
