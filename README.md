@@ -6,6 +6,15 @@
 
 A Chrome Extension used by the Canvas Support team to automate miscellaneous tasks.
 
+## Table of Contents
+
+- [Features](#features)
+- [Usage](#usage)
+  * [Copy Paste Tool](#copy-paste-tool)
+- [Installation](#installation)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Features
 
 * Auto-clear all stuck Content Migrations
@@ -23,17 +32,17 @@ A Chrome Extension used by the Canvas Support team to automate miscellaneous tas
 * Copy/Paste
 > Adds the ability to copy entire items in Canvas, and paste them wherever you would like. For instance, if you needed to test a quiz that had specific settings and question types, you can copy that quiz, and then paste it in your course.
 * Act as a random user
-> WIP...
+> To do...
 
-## Copy/Paste Tool
+### Copy Paste Tool
 
 This tool currently works with the following items:
-* Assignments
-* Quizzes
-* Pages
-* Discussions
-* Announcements
-* Rubrics
+- Assignments
+- Quizzes
+- Pages
+- Discussions
+- Announcements
+- Rubrics
 
 When copying Assignments, it's important to note that external tool assignments can not be copied. This includes Quizzes.Next assignments.
 
@@ -41,15 +50,17 @@ When copying Discussions, all of the discussion replies will be put in your name
 
 When copying Quizzes, only the first 100 questions will be copied/pasted. Question groups are supported, as long as they do not pull from a question bank. Question groups that pull from question banks are not stored in any retrievable way in the API for a quiz, and thus can not be copied/pasted.
 
+Regardless of what you're copying, POST endpoints do have data limits. If you're copying extremely large objects (>100kb), there's a good chance it won't paste.
+
+## Installation
+
+To do...
+
 ## Contributing
 
 Pull requests are always welcome! If it is anything more than a minor bug fix, please open an issue first to discuss the changes you would like to make.
 
 ALWAYS test, test, and test some more.
-
-## Tests
-
-Tests are currently in the works for CToolhu, but are planned to be created using the Jest package for Node.
 
 ## License
 
