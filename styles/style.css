@@ -85,6 +85,11 @@ main {
 	width: 100%;
 }
 
+#ctoolhuImage {
+	width: 64px;
+	height: 64px;
+}
+
 #currentlyMasquerading::after {
 	display: block;
 	content: "";
@@ -108,6 +113,12 @@ main {
 	width: 20px;
 }
 
+#masqueradeButtons {
+	position: absolute;
+	width: 268px;
+	bottom: 0px;
+}
+
 #masquerading {
 	position: relative;
 	display: none;
@@ -115,17 +126,11 @@ main {
 	width: 280px;
 }
 
-#masqueradeButtons {
-	position: absolute;
-	width: 268px;
-	bottom: 0px;
-}
-
 #masqueradeImage {
 	float: right;
 }
 
-#ctoolhuImage {
-	width: 64px;
-	height: 64px;
+#masqueradeRoles {
+	width: 134px;
+	float: left;
 }

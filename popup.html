@@ -36,16 +36,25 @@
 			<a id='masqueradeLink' href='#'>Masquerade Link</a>
 		</div>
 		<div class='styledButtons' id='masqueradeButtons'>
-			<input type='radio' id='admin' name='role' value='admin' checked>
-			<label for='admin'>Admin</label> <br />
-			<input type='radio' id='teacher' name='role' value='teacher'>
-			<label for='teacher'>Teacher</label> <br />
-			<input type='radio' id='student' name='role' value='student'>
-			<label for='student'>Student</label> <br />
-			<input type='radio' id='observer' name='role' value='observer'>
-			<label for='observer'>Observer</label> <br />
-			<input type='radio' id='ta' name='role' value='ta'>
-			<label for='ta'>TA</label> <br />
+			<div id='masqueradeRoles'>
+				<input type='radio' id='admin' name='role' value='admin' checked>
+				<label for='admin'>Admin</label> <br />
+				<input type='radio' id='teacher' name='role' value='teacher'>
+				<label for='teacher'>Teacher</label> <br />
+				<input type='radio' id='student' name='role' value='student'>
+				<label for='student'>Student</label> <br />
+				<input type='radio' id='observer' name='role' value='observer'>
+				<label for='observer'>Observer</label> <br />
+				<input type='radio' id='ta' name='role' value='ta'>
+				<label for='ta'>TA</label> <br />
+			</div>
+
+			<div id='includedAdminRoles'>
+				<input type='checkbox' id='rootAccountAdmins' value='rootAccountAdmins'>
+				<label for='rootAccountAdmins'>Include Root Account Admins</label> <br />
+				<input type='checkbox' id='subAccountAdmins' value='subAccountAdmins'>
+				<label for='subAccountAdmins'>Include Sub Account Admins</label>
+			</div>
 
 			<button id='actAsRandom'>Act As Random...</button>
 		</div>
