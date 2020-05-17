@@ -122,13 +122,13 @@ async function copyQuiz(authToken) {
 	copiedData.question_groups = [...groupSet];
 
 	chrome.storage.local.set({'copiedData': copiedData}, function() {
-		alert("Item Copied");
+		alert('Item Copied');
 	});
 }
 
 // Grabs a rubric object and stores it in copiedData
 async function copyRubric(authToken) {
-	var copiedData = await paginate(getAPIEndpoint(), '', authToken);
+	let copiedData = await paginate(getAPIEndpoint(), '', authToken);
 
 	copiedData.item_type = 'rubric';
 

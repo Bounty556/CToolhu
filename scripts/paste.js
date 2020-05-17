@@ -16,8 +16,6 @@ chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
 		chrome.storage.local.get(['copiedData'], data => {
 			const copiedData = data.copiedData;
 			if (copiedData) {
-				alert('No item copied');
-			} else {
 				let itemType = copiedData.item_type;
 				switch (itemType) {
 					case 'assignment':
@@ -43,6 +41,8 @@ chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
 					default:
 						alert('Copied item is corrupted, please re-copy');
 				}
+			} else {
+				alert('No item copied');
 			}
 		});
 	} else {
