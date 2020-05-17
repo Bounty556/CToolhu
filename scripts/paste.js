@@ -110,7 +110,7 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 					for (rating of ratings) {
 						for (ratingEntry of Object.entries(rating)) {
 							if (ratingEntry[1] && ratingEntry[0] != 'id') {
-								payload += `$rubric[criteria][${currentCriterion}][ratings][${currentRating}][${ratingEntry[0]}]=${ratingEntry[1]}`;
+								payload += `&rubric[criteria][${currentCriterion}][ratings][${currentRating}][${ratingEntry[0]}]=${ratingEntry[1]}`;
 							}
 						}
 
@@ -120,7 +120,7 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 
 				default:
 					if (entry[1]) {
-						payload += `$rubric[criteria][${currentCriterion}][${entry[0]}]=${entry[1]}`;
+						payload += `&rubric[criteria][${currentCriterion}][${entry[0]}]=${entry[1]}`;
 					}
 			}
 		}
@@ -191,7 +191,7 @@ async function pasteDiscussion(copiedData, courseID, authToken) {
 						for (rating of ratings) {
 							for (ratingEntry of Object.entries(rating)) {
 								if (ratingEntry[1] && ratingEntry[0] != 'id') {
-									payload += `$rubric[criteria][${currentCriterion}][ratings][${currentRating}][${ratingEntry[0]}]=${ratingEntry[1]}`;
+									payload += `&rubric[criteria][${currentCriterion}][ratings][${currentRating}][${ratingEntry[0]}]=${ratingEntry[1]}`;
 								}
 							}
 
@@ -201,7 +201,7 @@ async function pasteDiscussion(copiedData, courseID, authToken) {
 
 					default:
 						if (entry[1]) {
-							payload += `$rubric[criteria][${currentCriterion}][${entry[0]}]=${entry[1]}`;
+							payload += `&rubric[criteria][${currentCriterion}][${entry[0]}]=${entry[1]}`;
 						}
 				}
 			}
