@@ -1,5 +1,7 @@
 # CToolhu
 
+[Commit Activity](https://img.shields.io/github/commit-activity/m/Bounty556/Ctoolhu?style=flat-square)
+
 ## Description
 
 A Chrome Extension used by the Canvas Support team to automate miscellaneous tasks.
