@@ -136,7 +136,7 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 async function pasteDiscussion(copiedData, courseID, authToken) {
 	let payload = '';
 
-	const params = ['discussion_type', 'published', 'delayed_post_at', 'allow_rating', 'lock_at', 'podcast_enabled', 'podcast_has_student_posts', 'require_initial_post', 'pinned', 'only_graders_can_rate', 'sort_by_rating', 'title', 'message'];
+	const params = ['discussion_type', 'published', 'delayed_post_at', 'allow_rating', 'lock_at', 'podcast_enabled', 'podcast_has_student_posts', 'require_initial_post', 'pinned', 'only_graders_can_rate', 'sort_by_rating', 'title', 'message', 'comments_disabled'];
 
 	// Store all parameters
 	for (param of params) {
