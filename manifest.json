@@ -1,7 +1,7 @@
 {
     "name": "CToolhu by Jacob",
     "manifest_version": 2,
-    "version": "0.6.4",
+    "version": "0.6.5",
     "description": "Used to run common API calls in a scriptual fashion",
     "browser_action": {
         "default_icon": "icon.png",
