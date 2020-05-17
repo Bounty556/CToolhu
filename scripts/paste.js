@@ -365,8 +365,11 @@ async function pasteRubric(copiedData, courseID, authToken) {
 
 	payload += `rubric_association[purpose]=bookmark&rubric_association[association_type]=Course&rubric_association[association_id]=${courseID}&rubric[title]=${encodeURIComponent(copiedData.title)}&rubric[free_form_criterion_comments]=${copiedData.free_form_criterion_comments}`;
 
+	console.log(copiedData);
+
 	let currentCriterion = 0;
 	for (criterion of copiedData.data) {
+		console.log('thing');
 		for (entry of Object.entries(criterion)) {
 			// Look at the key of each entry of this criterion
 			switch (entry[0]) {
@@ -379,7 +382,7 @@ async function pasteRubric(copiedData, courseID, authToken) {
 					for (rating of ratings) {
 						for (ratingEntry of Object.entries(rating)) {
 							if (ratingEntry[1] && ratingEntry[0] != 'id') {
-								payload += `$rubric[criteria][${currentCriterion}][ratings][${currentRating}][${ratingEntry[0]}]=${ratingEntry[1]}`;
+								payload += `&rubric[criteria][${currentCriterion}][ratings][${currentRating}][${ratingEntry[0]}]=${ratingEntry[1]}`;
 							}
 						}
 
@@ -389,7 +392,7 @@ async function pasteRubric(copiedData, courseID, authToken) {
 
 				default:
 					if (entry[1]) {
-						payload += `$rubric[criteria][${currentCriterion}][${entry[0]}]=${entry[1]}`;
+						payload += `&rubric[criteria][${currentCriterion}][${entry[0]}]=${entry[1]}`;
 					}
 			}
 		}

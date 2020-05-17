@@ -35,7 +35,7 @@ This tool currently works with the following items:
 
 When copying Assignments, it's important to note that external tool assignments can not be copied. This includes Quizzes.Next assignments.
 
-When copying Discussions, all of the discussion replies will be put in your name, and only up to the first 100 replies on a discussion will be copied/pasted.
+When copying Discussions, all of the discussion replies will be put in your name, and only up to the first 100 replies on a discussion will be copied/pasted. Any attachments on the discussion will not be carried over either. This is because the attachment would need to be downloaded to your system and then reuploaded into the discussion in your course, which is both not supported by the Chrome extension API, and not a good idea. The same goes for announcements.
 
 When copying Quizzes, only the first 100 questions will be copied/pasted. Question groups are supported, as long as they do not pull from a question bank. Question groups that pull from question banks are not stored in any retrievable way in the API for a quiz, and thus can not be copied/pasted.
 
