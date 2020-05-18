@@ -21,7 +21,7 @@ A Chrome Extension used by the Canvas Support team to automate miscellaneous tas
 * Copy/Paste
 > Adds the ability to copy entire items in Canvas, and paste them wherever you would like. For instance, if you needed to test a quiz that had specific settings and question types, you can copy that quiz, and then paste it in your course.
 * Act as a random user
-> WIP...
+> Lets you act as a random user of a specific role without needing to go to any user pages. Currently supports all base-role types, include Admins, Sub Account Admins, Teachers, Students, Observers, and Course Designers. With Admins, you select which specific admin types you'd like to include in the list of random users, and works just about anywhere in a Canvas instance. All other enrollment types will require you to be in a course in order to begin acting as them.
 
 ## Copy/Paste Tool
 
