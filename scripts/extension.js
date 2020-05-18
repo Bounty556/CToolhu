@@ -102,19 +102,22 @@ function updateMasqueradingData(tabs) {
 				xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
 			}
 		}).then((data, textStatus, jqxhr) => {
+			// Get the id of the user we're masquerading as (if any)
 			const masquerading = /users\/\d+\/masquerade/g.test(jqxhr.responseText);
 
+			// If we're actually masquerading
 			if (masquerading) {
+				// Get the id of the user we're acting as
 				const currentUser = jqxhr.responseText.match(/"current_user_id":"([^"]+)/)[1];
 				
 				$.ajax({
-					url: `${domain}/api/v1/users/${currentUser}?include[]=sis_user_id`,
+					url: `${domain}/api/v1/users/${currentUser}`,
 					method: 'GET',
-					beforeSend: xhr => {
+					beforeSend: function(xhr) {
 						xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
 					}
 				}).then(data => {
-					// Update user info
+					// Update user info in popup window
 					$('#masqueradeName').text(data.name);
 					$('#masqueradeID').text(currentUser);
 					$('#masqueradeSIS').text(data.sis_user_id || '');

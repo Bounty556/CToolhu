@@ -39,7 +39,9 @@ async function masqAsAdmin(options, authToken) {
 
     // Grab root account admins
     if (isFindingRootAdmins) {
-        adminList.push(...await getAdminsInAccount('self', findAllRoleTypes, authToken));
+        const tempList = await getAdminsInAccount('self', findAllRoleTypes, authToken);
+
+        adminList.push(...tempList);
     }
 
     // Grab sub account admins
@@ -47,7 +49,9 @@ async function masqAsAdmin(options, authToken) {
         const subAccount = await findSubAccountNumber(authToken);
 
         if (subAccount) {
-            adminList.push(...await getAdminsInAccount(subAccount, findAllRoleTypes, authToken));
+            const tempList = await getAdminsInAccount(subAccount, findAllRoleTypes, authToken);
+
+            adminList.push(...tempList);
         }
     }
 
@@ -55,8 +59,18 @@ async function masqAsAdmin(options, authToken) {
     actAsUser(adminList[Math.floor(Math.random() * adminList.length)]);
 }
 
-function masqAsTeacher(authToken) {
-    console.log('teacher');
+async function masqAsTeacher(authToken) {
+    if (/courses\/\d+/.test(document.location.pathname)) {
+        const courseNumber = document.location.pathname.match(/courses\/(\d+)/)[1];
+
+        // Find teachers in course
+        let teacherList = await paginate(`${document.location.origin}/api/v1/courses/${courseNumber}/users`, 'enrollment_type[]=teacher', authToken);
+
+        // Map to ID
+        teacherList = teacherList.map(enrollment => enrollment.id);
+
+        actAsUser(teacherList[Math.floor(Math.random() * teacherList.length)]);
+    }
 }
 
 function masqAsStudent(authToken) {
@@ -76,6 +90,10 @@ function masqAsDesigner(authToken) {
 }
 
 function actAsUser(id) {
+    if (!id) {
+        return;
+    }
+
     if (/\?/.test(document.URL)) {
         window.location.href = `${document.URL}&become_user_id=${id}`;
     } else {
