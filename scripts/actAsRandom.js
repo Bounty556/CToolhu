@@ -60,33 +60,33 @@ async function masqAsAdmin(options, authToken) {
 }
 
 async function masqAsTeacher(authToken) {
-    if (/courses\/\d+/.test(document.location.pathname)) {
-        const courseNumber = document.location.pathname.match(/courses\/(\d+)/)[1];
+    const teacherList = await getUsersInCourse('teacher', authToken);
 
-        // Find teachers in course
-        let teacherList = await paginate(`${document.location.origin}/api/v1/courses/${courseNumber}/users`, 'enrollment_type[]=teacher', authToken);
-
-        // Map to ID
-        teacherList = teacherList.map(enrollment => enrollment.id);
-
-        actAsUser(teacherList[Math.floor(Math.random() * teacherList.length)]);
-    }
+    actAsUser(teacherList[Math.floor(Math.random() * teacherList.length)]);
 }
 
-function masqAsStudent(authToken) {
-    console.log('student');
+async function masqAsStudent(authToken) {
+    const studentList = await getUsersInCourse('student', authToken);
+
+    actAsUser(studentList[Math.floor(Math.random() * studentList.length)]);
 }
 
-function masqAsObserver(authToken) {
-    console.log('observer');
+async function masqAsObserver(authToken) {
+    const observerList = await getUsersInCourse('observer', authToken);
+
+    actAsUser(observerList[Math.floor(Math.random() * observerList.length)]);
 }
 
-function masqAsTA(authToken) {
-    console.log('ta');
+async function masqAsTA(authToken) {
+    const taList = await getUsersInCourse('ta', authToken);
+
+    actAsUser(taList[Math.floor(Math.random() * taList.length)]);
 }
 
-function masqAsDesigner(authToken) {
-    console.log('designer');
+async function masqAsDesigner(authToken) {
+    const designerList = await getUsersInCourse('designer', authToken);
+
+    actAsUser(designerList[Math.floor(Math.random() * designerList.length)]);
 }
 
 function actAsUser(id) {
@@ -116,6 +116,20 @@ async function getAdminsInAccount(account, findAllRoleTypes, authToken) {
     }
 
     return tempList;
+}
+
+async function getUsersInCourse(enrollmentType, authToken) {
+    if (/courses\/\d+/.test(document.location.pathname)) {
+        const courseNumber = document.location.pathname.match(/courses\/(\d+)/)[1];
+
+        // Find teachers in course
+        let userList = await paginate(`${document.location.origin}/api/v1/courses/${courseNumber}/users`, `enrollment_type[]=${enrollmentType}`, authToken);
+
+        // Map to ID
+        userList = userList.map(enrollment => enrollment.id);
+        return userList;
+    }
+    return [];
 }
 
 async function findSubAccountNumber(authToken) {

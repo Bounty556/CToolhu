@@ -101,17 +101,18 @@ function updateMasqueradingData(tabs) {
 			beforeSend: xhr => {
 				xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
 			}
-		}).then((data, textStatus, jqxhr) => {
-			// Get the id of the user we're masquerading as (if any)
-			const masquerading = /users\/\d+\/masquerade/g.test(jqxhr.responseText);
+		}).then((data, textStatus, jqXHR) => {
+			// This will be null if we are not masquerading
+			const realUser = jqXHR.getResponseHeader('x-canvas-real-user-id');
 
 			// If we're actually masquerading
-			if (masquerading) {
+			if (realUser) {
 				// Get the id of the user we're acting as
-				const currentUser = jqxhr.responseText.match(/"current_user_id":"([^"]+)/)[1];
-				
+				const currentUser = jqXHR.getResponseHeader('x-canvas-user-id');
+
+				// If we don't pass in our actual user id, the call will be made with the permissions of the user we're acting as instead
 				$.ajax({
-					url: `${domain}/api/v1/users/${currentUser}`,
+					url: `${domain}/api/v1/users/${currentUser}?as_user_id=${realUser}`,
 					method: 'GET',
 					beforeSend: function(xhr) {
 						xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
@@ -119,7 +120,7 @@ function updateMasqueradingData(tabs) {
 				}).then(data => {
 					// Update user info in popup window
 					$('#masqueradeName').text(data.name);
-					$('#masqueradeID').text(currentUser);
+					$('#masqueradeID').text(data.id);
 					$('#masqueradeSIS').text(data.sis_user_id || '');
 					$('#masqueradeUserPage').attr('href', `${domain}/users/${currentUser}`);
 					$('#masqueradeImage').attr('src', data.avatar_url);

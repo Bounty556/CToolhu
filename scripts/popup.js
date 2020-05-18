@@ -66,6 +66,17 @@ function setAuth() {
 	{
 		chrome.storage.local.set({'ctoolhuAuthToken': tempAuth}, () => {
 			console.log('Successfully stored auth token');
+
+			$.ajax({
+				url: 'https://siteadmin.instructure.com/',
+				method: 'GET',
+				beforeSend: xhr => {
+					xhr.setRequestHeader('Authorization', `Bearer ${tempAuth}`);
+				}
+			}).then((data, textStatus, jqXHR) => {
+				// Also set our real user id using the token we gave
+				chrome.storage.local.set({'ctoolhuRealUserID': jqXHR.getResponseHeader('x-canvas-user-id')}, () => {});
+			});
 		});
 	}
 }
