@@ -1,4 +1,4 @@
-chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
+chrome.storage.local.get(['ctoolhuAuthToken'], data => {
 	let authToken = data.ctoolhuAuthToken;
 	if (!authToken) {
 		alert('No auth token set');
@@ -400,9 +400,9 @@ async function pasteRubric(copiedData, courseID, authToken) {
 		currentCriterion++;
 	}
 
-	apiCall(`${document.location.origin}/api/v1/courses/${courseID}/rubrics`, 'POST', payload, authToken);
-
 	console.log(payload);
+	
+	await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/rubrics`, 'POST', payload, authToken);
 
 	alert("Done!");
 }

@@ -26,26 +26,39 @@
 	<!-- Masquerading section -->
 	<section id='masquerading'>
 		<div id='currentlyMasquerading'>
-			<img id='masqueradeImage' src='https://via.placeholder.com/150'>
+			<img id='masqueradeImage' src='https://via.placeholder.com/132'>
 
-			<p id='masqueradeName'>Name</p>
-			<p id='masqueradeRole'>Role</p>
-			<p id='masqueradeID'>ID</p>
-			<p id='masqueradeSIS'>SIS</p>
-			<a id='masqueradeUserPage' href='#'>User Page</a>
-			<a id='masqueradeLink' href='#'>Masquerade Link</a>
+			<div id='masqueradeInfo'>
+				<p id='masqueradeName'>Name</p>
+				<p id='masqueradeID'>ID</p>
+				<p id='masqueradeSIS'>SIS</p>
+				<p><a id='masqueradeUserPage' href='#' target='_blank'>User Page</a></p>
+			</div>
 		</div>
 		<div class='styledButtons' id='masqueradeButtons'>
-			<input type='radio' id='admin' name='role' value='admin' checked>
-			<label for='admin'>Admin</label> <br />
-			<input type='radio' id='teacher' name='role' value='teacher'>
-			<label for='teacher'>Teacher</label> <br />
-			<input type='radio' id='student' name='role' value='student'>
-			<label for='student'>Student</label> <br />
-			<input type='radio' id='observer' name='role' value='observer'>
-			<label for='observer'>Observer</label> <br />
-			<input type='radio' id='ta' name='role' value='ta'>
-			<label for='ta'>TA</label> <br />
+			<div id='masqueradeRoles'>
+				<input type='radio' id='admin' name='role' value='admin' checked>
+				<label for='admin'>Admin</label> <br />
+				<input type='radio' id='teacher' name='role' value='teacher'>
+				<label for='teacher'>Teacher</label> <br />
+				<input type='radio' id='student' name='role' value='student'>
+				<label for='student'>Student</label> <br />
+				<input type='radio' id='observer' name='role' value='observer'>
+				<label for='observer'>Observer</label> <br />
+				<input type='radio' id='ta' name='role' value='ta'>
+				<label for='ta'>TA</label> <br />
+				<input type='radio' id='designer' name='role' value='designer'>
+				<label for='designer'>Designer</label> <br />
+			</div>
+
+			<div id='includedAdminRoles'>
+				<input type='checkbox' id='rootAccountAdmins' name='includedRoles' value='rootAccountAdmins'>
+				<label for='rootAccountAdmins'>Include Root Account Admins</label> <br />
+				<input type='checkbox' id='subAccountAdmins' name='includedRoles' value='subAccountAdmins'>
+				<label for='subAccountAdmins'>Include Sub Account Admins</label> <br />
+				<input type='checkbox' id='allAdmins' name='includedRoles' value='allAdmins'>
+				<label for='subAccountAdmins'>Include All Admin Types</label>
+			</div>
 
 			<button id='actAsRandom'>Act As Random...</button>
 		</div>

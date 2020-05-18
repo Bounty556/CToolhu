@@ -24,7 +24,7 @@ chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
 
 // Grabs the assignment object anad stores it in copiedData.
 async function copyAssignment(authToken) {
-	let copiedData = await paginate(getAPIEndpoint(), '', authToken);
+	let copiedData = (await paginate(getAPIEndpoint(), '', authToken))[0];
 	copiedData.item_type = 'assignment';
 
 	// If this assignment has a rubric
@@ -54,7 +54,7 @@ async function copyAssignment(authToken) {
 
 // Grabs the discussion object and stores it in copiedData
 async function copyDiscussion(authToken) {
-	let copiedData = await paginate(getAPIEndpoint(), '', authToken);
+	let copiedData = (await paginate(getAPIEndpoint(), '', authToken))[0];
 
 	copiedData.item_type = 'discussion';
 
@@ -87,7 +87,7 @@ async function copyDiscussion(authToken) {
 
 // Grabs the page object and stores it in copiedData
 async function copyPage(authToken) {
-	let copiedData = await paginate(getAPIEndpoint(), '', authToken);
+	let copiedData = (await paginate(getAPIEndpoint(), '', authToken))[0];
 
 	copiedData.item_type = 'page';
 	copiedData.title = encodeURIComponent(copiedData.title);
@@ -103,7 +103,7 @@ async function copyPage(authToken) {
 
 // Grabs the quiz object and stores it in copiedData
 async function copyQuiz(authToken) {
-	let copiedData = await paginate(getAPIEndpoint(), '', authToken);
+	let copiedData = (await paginate(getAPIEndpoint(), '', authToken))[0];
 
 	copiedData.item_type = 'quiz';
 
@@ -128,7 +128,7 @@ async function copyQuiz(authToken) {
 
 // Grabs a rubric object and stores it in copiedData
 async function copyRubric(authToken) {
-	let copiedData = await paginate(getAPIEndpoint(), '', authToken);
+	let copiedData = (await paginate(getAPIEndpoint(), '', authToken))[0];
 
 	copiedData.item_type = 'rubric';
 

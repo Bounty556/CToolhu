@@ -3,6 +3,7 @@ $('#masquerade').on('click', toggleMasqueradePanel);
 $('#showClipboard').on('click', showClipboard);
 $('#saveToClipboard').on('click', saveToClipboard);
 $('#copyText').on('click', copyClipboardText);
+$('input[name="role"]').on('click', toggleMasqueradeButtons);
 
 function toggleDevConsole() {
 	let debugDisplay = $('#debugging');
@@ -26,6 +27,9 @@ function toggleMasqueradePanel() {
 	if (masqDisplay.css('display') === 'block') {
 		masqDisplay.css('display', 'none');
 	 } else {
+		// Update masquerading data
+		chrome.tabs.query({active: true, currentWindow: true}, updateMasqueradingData);
+
 		masqDisplay.css('display', 'block');
 		debugDisplay.css('display', 'none');
 	}
@@ -73,6 +77,59 @@ function copyClipboardText() {
 	element.select();
 	document.execCommand('copy');
 	document.body.removeChild(element);
+}
+
+function toggleMasqueradeButtons() {
+	if ($(this).val() != 'admin') {
+		$('#includedAdminRoles').hide();
+	} else {
+		$('#includedAdminRoles').show();
+	}
+}
+
+function updateMasqueradingData(tabs) {
+	const domain = tabs[0].url.match(/(https?:\/\/[^/]+)\//)[1];
+
+	chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
+		const authToken = data.ctoolhuAuthToken;
+		if (!authToken) {
+			return;
+		}
+		$.ajax({
+			url: domain,
+			method: 'GET',
+			beforeSend: xhr => {
+				xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+			}
+		}).then((data, textStatus, jqXHR) => {
+			// This will be null if we are not masquerading
+			const realUser = jqXHR.getResponseHeader('x-canvas-real-user-id');
+
+			// If we're actually masquerading
+			if (realUser) {
+				// Get the id of the user we're acting as
+				const currentUser = jqXHR.getResponseHeader('x-canvas-user-id');
+
+				// If we don't pass in our actual user id, the call will be made with the permissions of the user we're acting as instead
+				$.ajax({
+					url: `${domain}/api/v1/users/${currentUser}?as_user_id=${realUser}`,
+					method: 'GET',
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+					}
+				}).then(data => {
+					// Update user info in popup window
+					$('#masqueradeName').text(data.name);
+					$('#masqueradeID').text(data.id);
+					$('#masqueradeSIS').text(data.sis_user_id || '');
+					$('#masqueradeUserPage').attr('href', `${domain}/users/${currentUser}`);
+					$('#masqueradeImage').attr('src', data.avatar_url);
+
+					$('#currentlyMasquerading').show();
+				});
+			}
+		});
+   });
 }
 
 function sleep(ms) {
