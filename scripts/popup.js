@@ -56,6 +56,7 @@ document.getElementById('splunkSearch').addEventListener('click', splunkHandler)
 document.getElementById('copy').addEventListener('click', copyHandler);
 document.getElementById('paste').addEventListener('click', pasteHandler);
 document.getElementById('showClipboard').addEventListener('click', getClipboardHandler);
+document.getElementById('ctoolhuImage').addEventListener('click', getClipboardHandler);
 document.getElementById('actAsRandom').addEventListener('click', setActAsRandomOptions);
 
 // Button functions

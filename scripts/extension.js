@@ -13,9 +13,8 @@ function toggleDevConsole() {
 	if (debugDisplay.css('display') === 'block') {
 		debugDisplay.css('display', 'none');
 	 } else {
-		updateClipboard(0);
+		showClipboard();
 		debugDisplay.css('display', 'block');
-		miscText.css('display', 'none');
 		masqDisplay.css('display', 'none');
 	}
 }
@@ -36,8 +35,8 @@ function toggleMasqueradePanel() {
 }
 
 function showClipboard() {
-	$('#miscText').text('Loading...');
 	$('#miscText').css('display', 'block');
+	$('#miscText').text('Loading...');
 	updateClipboard(1000);
 }
 
@@ -48,19 +47,17 @@ function saveToClipboard() {
 	// Remove empty lines
 	stack = stack.filter(word => word.length > 0);
 
-	let data = createJSONObject(stack);
+	const data = createJSONObject(stack);
 
-	chrome.storage.local.set({'copiedData': data}, function() {
-		$('#miscText').css('display', 'block');
+	chrome.storage.local.set({'copiedData': data}, () => {
 		$('#miscText').text('Saved!');
 	});
 }
 
 async function updateClipboard(ms) {
-	if (ms != 0)
-		await sleep(ms);
-
-	chrome.storage.local.get(['ctoolhuClipboard'], function(data) {
+	await sleep(ms);
+	
+	chrome.storage.local.get(['ctoolhuClipboard'], data => {
 	 	$('#debugLog').html(data.ctoolhuClipboard);
 		$('#miscText').css('display', 'none');
 	});
