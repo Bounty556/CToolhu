@@ -65,9 +65,12 @@ function setAuth() {
 
 	if (tempAuth)
 	{
-		chrome.storage.local.set({'ctoolhuAuthToken': tempAuth}, () => {
-			console.log('Successfully stored auth token');
+		if (!/\d{2}~[a-zA-Z0123456789]{64}/.test(tempAuth)) {
+			alert('Invalid Auth Token entered');
+			return;
+		}
 
+		chrome.storage.local.set({'ctoolhuAuthToken': tempAuth}, () => {
 			$.ajax({
 				url: 'https://siteadmin.instructure.com/',
 				method: 'GET',
