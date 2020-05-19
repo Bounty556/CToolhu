@@ -1,4 +1,4 @@
-chrome.storage.local.get(['ctoolhuAuthToken'], function(data) {
+chrome.storage.local.get(['ctoolhuAuthToken'], data => {
 	const authToken = data.ctoolhuAuthToken;
 	if (!authToken) {
 		alert('No auth token set');
@@ -47,7 +47,7 @@ async function copyAssignment(authToken) {
 		});
 	}
 	
-	chrome.storage.local.set({'copiedData': copiedData}, function() {
+	chrome.storage.local.set({'copiedData': copiedData}, () => {
 		alert("Item Copied");
 	});
 }
@@ -80,7 +80,7 @@ async function copyDiscussion(authToken) {
 		});
 	}
 
-	chrome.storage.local.set({'copiedData': copiedData}, function() {
+	chrome.storage.local.set({'copiedData': copiedData}, () => {
 		alert("Item Copied");
 	});
 }
@@ -94,7 +94,7 @@ async function copyPage(authToken) {
 	copiedData.body = encodeURIComponent(copiedData.body);
 	copiedData.published = copiedData.published;
 
-	chrome.storage.local.set({'copiedData': copiedData}, function() {
+	chrome.storage.local.set({'copiedData': copiedData}, () => {
 		console.log('Successfully copied item');
 	});
 
@@ -110,18 +110,31 @@ async function copyQuiz(authToken) {
 	// Grabs the questions in this quiz and stores them in copiedData.questions
 	copiedData.questions = await paginate(`${getAPIEndpoint()}/questions`, '', authToken);
 
+	let groupIdList = [];
+
 	// Grab all question groups in this quiz
-	let groupSet = new Set();
+	copiedData.question_groups = [];
 	for (question of copiedData.questions) {
-		if (question.quiz_group_id) {
-			const group = await paginate(`${getAPIEndpoint()}/groups/${question.quiz_group_id}`, '', authToken);
-			groupSet.add(group);
+		if (!groupIdList.includes(question.quiz_group_id)) {
+			groupIdList.push(question.quiz_group_id);
 		}
 	}
+	
+	let receivedGroupCount = 0;
+	
+	for (groupId of groupIdList) {
+		paginate(`${getAPIEndpoint()}/groups/${groupId}`, '', authToken).then(data => {
+			copiedData.question_groups.push(data[0]);
+			receivedGroupCount++;
+		});
+	}
 
-	copiedData.question_groups = [...groupSet];
+	// Wait until all groups are grabbed
+	while (receivedGroupCount < groupIdList.length) {
+		await sleep(25);
+	}
 
-	chrome.storage.local.set({'copiedData': copiedData}, function() {
+	chrome.storage.local.set({'copiedData': copiedData}, () => {
 		alert('Item Copied');
 	});
 }
@@ -146,7 +159,7 @@ async function copyRubric(authToken) {
 		return criterion;
 	});
 	
-	chrome.storage.local.set({'copiedData': copiedData}, function() {
+	chrome.storage.local.set({'copiedData': copiedData}, () => {
 		alert("Item Copied");
 	});
 }

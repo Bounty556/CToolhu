@@ -271,14 +271,25 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 
 	// Map question groups in original quiz to groups in new quiz
 	let groupIDMap = {};
+	let postedGroupCount = 0;
 
 	for (questionGroup of copiedData.question_groups) {
+
 		payload = `quiz_groups[][name]=${questionGroup.name}&quiz_groups[][pick_count]=${questionGroup.pick_count}&quiz_groups[][question_points]=${questionGroup.question_points}`;
 
-		const group = await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/quizzes/${quiz.id}/groups`, 'POST', payload, authToken);
+		// If we don't declare this outside of the callback, all questiongroupids will be the same
+		const questionGroupID = questionGroup.id;
 
-		// https://canvas.instructure.com/doc/api/quiz_question_groups.html#method.quizzes/quiz_groups.create
-		groupIDMap[questionGroup.id] = group.quiz_groups[0].id;
+		ensureResults(`${document.location.origin}/api/v1/courses/${courseID}/quizzes/${quiz.id}/groups`, 'POST', payload, authToken).then(data => {
+			// https://canvas.instructure.com/doc/api/quiz_question_groups.html#method.quizzes/quiz_groups.create
+			groupIDMap[questionGroupID] = data.quiz_groups[0].id;
+			postedGroupCount++;
+		});
+	}
+
+	// Wait until all groups are grabbed
+	while (postedGroupCount < copiedData.question_groups.length) {
+		await sleep(25);
 	}
 
 	// Add questions/answers to quiz
