@@ -1,6 +1,6 @@
 # CToolhu
 
-[Commit Activity](https://img.shields.io/github/commit-activity/m/Bounty556/Ctoolhu?style=flat-square)
+![Commit Activity](https://img.shields.io/github/commit-activity/m/Bounty556/Ctoolhu?style=flat-square)
 
 ## Description
 
@@ -17,14 +17,6 @@ A Chrome Extension used by the Canvas Support team to automate miscellaneous tas
 
 ## Features
 
-* Auto-clear all stuck Content Migrations
-* Run a Splunk search for the page you're currently on
-* Copy a Canvas Item
-* Paste a Canvas Item
-* Act as a random user
-
-## Usage
-
 * Auto-clear stuck Content Migrations
 > Works only on the /content_migrations page of a course. If any migration imports are stuck (pre-processing), this will go force those to fail out.
 * Splunk Search
@@ -33,6 +25,17 @@ A Chrome Extension used by the Canvas Support team to automate miscellaneous tas
 > Adds the ability to copy entire items in Canvas, and paste them wherever you would like. For instance, if you needed to test a quiz that had specific settings and question types, you can copy that quiz, and then paste it in your course.
 * Act as a random user
 > Lets you act as a random user of a specific role without needing to go to any user pages. Currently supports all base-role types, include Admins, Sub Account Admins, Teachers, Students, Observers, and Course Designers. With Admins, you select which specific admin types you'd like to include in the list of random users, and works just about anywhere in a Canvas instance. All other enrollment types will require you to be in a course in order to begin acting as them.
+
+## Usage
+
+The first thing you should do after installation is set up your Auth Token. To create a new Auth Token for CToolhu:
+1. Go into Canvas, and click on Account > Settings at the top left.
+2. Find the 'Approved Integrations' section, and click the '+ New Access Token' button at the bottom of the list of access tokens.
+3. In the 'Purpose' box, put 'CToolhu', or whatever you want to help you remember this access token is for this tool specifically.
+4. Click on 'Generate Token', and copy the token that you are given.
+5. Click on the CToolhu extension to open the popup, and click 'Set Auth Token'. Paste your newly copied Auth Token in here, and click 'OK'.
+
+Now that you have your auth token set, you can begin using the tool. Please note that because your auth token is set up only in prod, you won't be able to use any of the tools except for the Splunk Search in Beta or Test, until they refresh respectively.
 
 ### Copy Paste Tool
 
@@ -54,7 +57,17 @@ Regardless of what you're copying, POST endpoints do have data limits. If you're
 
 ## Installation
 
-To do...
+CToolhu is installed just like any other extension in Chrome that isn't in the Chrome app store:
+1. In the Github repo, click the green 'Clone or download' button at the top right, and choose 'Download ZIP'.
+2. Go to wherever your ZIP file and extract it.
+3. Move the resulting folder to a safe place, such as your Applications folder on Mac.
+4. In Google Chrome, click on the 3 dots at the top right, and then 'Settings'.
+5. In the Settings page, click 'Extensions' on the left.
+6. In the Extensions page, make sure you have the 'Developer mode' setting set to on, in the top right corner.
+7. Click 'Load unpacked' and find the CToolhu folder in your file explorer.
+8. Make sure you have the CToolhu folder highlighted, and not anything inside of it, then click 'Select' or 'Open'.
+
+CToolhu should now be installed in Google Chrome. If you don't see the extension appear at the top right, close out of Chrome and reopen.
 
 ## Contributing
 
