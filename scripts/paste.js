@@ -213,7 +213,7 @@ async function pasteDiscussion(copiedData, courseID, authToken) {
 	}
 
 	for (reply of copiedData.entries) {
-		const entry = apiCall(`${document.location.origin}/api/v1/courses/${courseID}/discussion_topics/${discussion.id}/entries`, 'POST', `message=${encodeURIComponent(reply.message)}`, authToken);
+		const entry = ensureResults(`${document.location.origin}/api/v1/courses/${courseID}/discussion_topics/${discussion.id}/entries`, 'POST', `message=${encodeURIComponent(reply.message)}`, authToken);
 
 		// Add recent replies to entries
 		if (reply.recent_replies) {
@@ -234,6 +234,7 @@ async function pastePage(copiedData, courseID, authToken) {
 				break;
 			
 			default:
+				// For some reason the payloads for pages don't like to be encoded (wtf?)
 				if (entry[1]) {
 					payload += `wiki_page[${entry[0]}]=${entry[1]}&`;
 				}
@@ -259,7 +260,7 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 			// If the value is a string, encode it just in case
 			const val = (typeof copiedData[param] === 'string') ? encodeURIComponent(copiedData[param]) : copiedData[param];
 
-			payload += `quiz[${param}]=${copiedData[param]}&`;
+			payload += `quiz[${param}]=${val}&`;
 		}
 	}
 
@@ -351,9 +352,7 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 		// Get rid of excess '&'
 		payload = payload.substr(0, payload.length - 1);
 
-		apiCall(`${document.location.origin}/api/v1/courses/${courseID}/quizzes/${quiz.id}/questions`, 'POST', payload, authToken);
-
-		console.log(payload);
+		ensureResults(`${document.location.origin}/api/v1/courses/${courseID}/quizzes/${quiz.id}/questions`, 'POST', payload, authToken);
 	}
 
 	alert('Done');
@@ -411,6 +410,6 @@ async function addEntryReplies(promisedEntry, replies, URL, authToken) {
 	const entry = await promisedEntry;
 
 	for (var i = 0; i < replies.length; i++) {
-		apiCall(`${URL}/${entry.id}/replies`, 'POST', `message=${encodeURIComponent(replies[i].message)}`, authToken);
+		ensureResults(`${URL}/${entry.id}/replies`, 'POST', `message=${encodeURIComponent(replies[i].message)}`, authToken);
 	}
 }

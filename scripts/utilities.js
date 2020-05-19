@@ -15,7 +15,6 @@ async function paginate(url, payload, authToken, nextLink = null, realUserID = n
 	
 	// Spinlock while waiting for storage
 	while (lock && currentLockAttempt < lockLimit) {
-		console.log('oof');
 		await sleep(50);
 		currentLockAttempt++;
 	}
@@ -47,7 +46,6 @@ async function paginate(url, payload, authToken, nextLink = null, realUserID = n
 		nextLink = parseLinkHeader(linkHeader).next;
 		
 		if (nextLink) {
-			console.log('loop');
 			const result = await paginate(url, payload, authToken, nextLink, realUserID);
 			accumulatedData.push(...result);
 		}
@@ -74,7 +72,7 @@ function apiCall(url, call, payload, authToken) {
 	const result = $.ajax( {
 		url: `${url}?${payload}`,
 		method: call,
-		beforeSend : xhr => {
+		beforeSend: xhr => {
 			xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
 		}
 	});
@@ -82,8 +80,25 @@ function apiCall(url, call, payload, authToken) {
 	return result;
 }
 
+// Makes use of Exponential Backoff to ensure that the call runs without being rate limited
+async function ensureResults(url, call, payload, authToken, waitTime = 25) {
+	let results = null;
+	try {
+		results = await apiCall(url, call, payload, authToken);
+	} catch (err) {
+		if (err.status === 403) {
+			await sleep(waitTime);
+			results = await ensureResults(url, call, payload, authToken, waitTime * 2);
+		}
+	}
+	
+	return results;
+}
+
 function getAPIEndpoint() {
-	return `${document.location.origin}/api/v1${document.location.pathname}`;
+	const path = document.location.pathname.match(/(\/api\/v1)?(.+)/)[2];
+
+	return `${document.location.origin}/api/v1${path}`;
 }
 
 function sleep(ms) {
