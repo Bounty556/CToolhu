@@ -15,6 +15,11 @@ chrome.storage.local.get(['ctoolhuAuthToken'], data => {
 		// Grab copied data
 		chrome.storage.local.get(['copiedData'], data => {
 			const copiedData = data.copiedData;
+
+			if (!confirm(`Are you sure you want to paste this ${copiedData.item_type}?`)) {
+				return;
+			}
+
 			if (copiedData) {
 				let itemType = copiedData.item_type;
 				switch (itemType) {
