@@ -18,13 +18,13 @@ A Chrome Extension used by the Canvas Support team to automate miscellaneous tas
 ## Features
 
 * Auto-clear stuck Content Migrations
-> Works only on the /content_migrations page of a course. If any migration imports are stuck (pre-processing), this will go force those to fail out.
+> Works only on the /content_migrations page of a course. If any migration imports are stuck (pre-processing), this will force those to fail out.
 * Splunk Search
 > Begins a new Splunk search based on the current page you're on in Canvas. Will work for any page, including API pages. If you are currently masquerading as a user, the search will be configured to look for only interactions from that specific user. By default, the search will include all forms of interactions except for: Pings, Page View Loads, and Unread Count calls.
 * Copy/Paste
 > Adds the ability to copy entire items in Canvas, and paste them wherever you would like. For instance, if you needed to test a quiz that had specific settings and question types, you can copy that quiz, and then paste it in your course.
 * Act as a random user
-> Lets you act as a random user of a specific role without needing to go to any user pages. Currently supports all base-role types, include Admins, Sub Account Admins, Teachers, Students, Observers, and Course Designers. With Admins, you select which specific admin types you'd like to include in the list of random users, and works just about anywhere in a Canvas instance. All other enrollment types will require you to be in a course in order to begin acting as them.
+> Lets you act as a random user of a specific role without needing to go to any user pages. Currently supports all base-role types, include Admins, Sub Account Admins, Teachers, Students, Observers, TAs, and Course Designers. With Admins, you select which specific admin types you'd like to include in the list of random users, and works just about anywhere in a Canvas instance. All other enrollment types will require you to be in a course in order to begin acting as them.
 
 ## Usage
 
