@@ -5,6 +5,7 @@ $('#miscTools').on('click', toggleMiscPanel);
 
 function toggleDevConsole() {
 	updateClipboard();
+	updateValidSites();
 	toggleSection('debugging');
 }
 
@@ -20,7 +21,7 @@ function toggleMiscPanel() {
 async function updateClipboard() {
 	chrome.storage.local.get(['copiedData'], data => {
 		const copiedData = data.copiedData;
-		let clipboardString = '-----Clipboard-----\n';
+		let clipboardString = '';
 
 		// Get type of object
 		clipboardString += `Type: ${capitalize(copiedData.item_type)}\n`;
@@ -34,9 +35,20 @@ async function updateClipboard() {
 		// Get misc info of object
 		clipboardString += getMiscData(copiedData);
 
-		clipboardString += '-------------------\n';
-
 		$('#clipboardSummary').html(clipboardString);
+	});
+}
+
+async function updateValidSites() {
+	chrome.storage.local.get(['validSiteList'], data => {
+		const siteList = data.validSiteList;
+		let siteListString = '';
+
+		for (site of siteList) {
+			siteListString += `${site}\n`;
+		}
+
+		$('#validSites').text(siteListString);
 	});
 }
 
