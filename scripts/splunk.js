@@ -9,7 +9,7 @@ getPageInfo(`https://${document.domain}`);
 
 function splunk(regionInfo)
 {
-	const query = `search index=canvas_${regionInfo.index} global_root_account=${globRootID} http_request=${locationInfo} ${getMasqueradingQuery} ${garbageRemoval}`;
+	const query = `search index=canvas_${regionInfo.index} global_root_account=${globRootID} http_request=${locationInfo} ${getMasqueradingQuery()} ${garbageRemoval}`;
 	const targetURL = `https://inst${regionInfo.splunkBit}.splunkcloud.com/en-US/app/canvas/search?q=${encodeURIComponent(query)}`;
 	window.open(targetURL, '_blank');
 }
