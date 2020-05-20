@@ -2,6 +2,9 @@ $('#ctoolhuImage').on('click', toggleDevConsole);
 $('#masquerade').on('click', toggleMasqueradePanel);
 $('input[name="role"]').on('click', toggleMasqueradeButtons);
 $('#miscTools').on('click', toggleMiscPanel);
+$('#clearSites').on('click', clearValidSites);
+$('#clearClipboard').on('click', clearClipboard);
+$(document.body).on('click', '.deleteSite', deleteSite);
 
 function toggleDevConsole() {
 	updateClipboard();
@@ -18,9 +21,42 @@ function toggleMiscPanel() {
 	toggleSection('miscellaneous');
 }
 
+function clearValidSites() {
+	chrome.storage.local.set({'validSiteList': []}, () => {
+		updateValidSites();
+	});
+}
+
+function clearClipboard() {
+	chrome.storage.local.set({'copiedData': {}}, () => {
+		updateClipboard();
+	});
+}
+
+function deleteSite() {
+	chrome.storage.local.get(['validSiteList'], data => {
+		let siteList = data.validSiteList;
+		const index = siteList.findIndex(site => site === $(this).attr('data_site'));
+
+		console.log(index);
+
+		siteList.splice(index, 1);
+
+		chrome.storage.local.set({'validSiteList': siteList}, () => {
+			updateValidSites();
+		});
+	});
+}
+
 async function updateClipboard() {
 	chrome.storage.local.get(['copiedData'], data => {
 		const copiedData = data.copiedData;
+
+		if (!copiedData.item_type) {
+			$('#clipboardSummary').html('');
+			return;
+		}
+
 		let clipboardString = '';
 
 		// Get type of object
@@ -45,10 +81,10 @@ async function updateValidSites() {
 		let siteListString = '';
 
 		for (site of siteList) {
-			siteListString += `${site}\n`;
+			siteListString += `${site} <img class='deleteSite' data_site="${site}" src="./res/delete.png" width=8/>\n`;
 		}
 
-		$('#validSites').text(siteListString);
+		$('#validSites').html(siteListString);
 	});
 }
 
