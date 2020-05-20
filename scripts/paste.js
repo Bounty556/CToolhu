@@ -1,4 +1,4 @@
-chrome.storage.local.get(['ctoolhuAuthToken'], data => {
+chrome.storage.local.get(['ctoolhuAuthToken', 'validSiteList'], data => {
 	let authToken = data.ctoolhuAuthToken;
 	if (!authToken) {
 		alert('No auth token set');
@@ -6,7 +6,12 @@ chrome.storage.local.get(['ctoolhuAuthToken'], data => {
 	}
 
 	// Make sure we're in a course, also grab the course ID
-	let regex = document.URL.match(/\/courses\/(\d+)/);
+	const regex = document.URL.match(/\/courses\/(\d+)/);
+
+	// Verify that this is a valid site to post to
+	if (!validateSite(data.validSiteList)) {
+		return;
+	}
 
 	if (regex)
 	{
@@ -54,6 +59,32 @@ chrome.storage.local.get(['ctoolhuAuthToken'], data => {
 		alert('This tool only works inside of a course');
 	}
 });
+
+function validateSite(validSiteList) {
+	if (validSiteList) {
+		// Check if valid domain
+		if (validSiteList.includes(document.domain)) {
+			return true;
+		} else {
+			const response = prompt(`This site is not on your list of sites you can paste to. To add this to your list of sites, enter the domain below. The domain for this site is ${document.domain}`).trim();
+			if (response && response === document.domain) {
+				validSiteList.push(document.domain);
+
+				// Add to list of valid sites, and validate pasting
+				chrome.storage.local.set({'validSiteList': validSiteList}, () => {});
+
+				return true;
+			} else if (!response) { // The left the response empty
+				return false;
+			} else { //The response is not equal to the domain
+				return validateSite(validSiteList);
+			}
+		}
+	} else {
+		validSiteList = [];
+		return validateSite(validSiteList);
+	}
+}
 
 async function pasteAssignment(copiedData, courseID, authToken) {
 	// Consolidate payload
