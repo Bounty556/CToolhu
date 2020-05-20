@@ -47,11 +47,13 @@ This tool currently works with the following items:
 - Announcements
 - Rubrics
 
+Currently, the tool works only when you're on the page of the item you want to copy. For example, if you wanted to copy an assignment, go to the /courses/###/assignments/### page, and click 'Copy Item'. At the moment, this does not work on the edit page for any items, but that's subject to change. You can then go to any course and paste this item in there using the 'Paste Item' button. The first time you paste an item on a site you haven't before, it will prompt you to add that site to the list of valid sites you can paste to. This is to make sure you know exactly where you're pasting to, in case you accidentally click paste in a non-sandbox instance.
+
 When copying Assignments, it's important to note that external tool assignments can not be copied. This includes Quizzes.Next assignments.
 
-When copying Discussions, all of the discussion replies will be put in your name, and only up to the first 100 replies on a discussion will be copied/pasted. Any attachments on the discussion will not be carried over either. This is because the attachment would need to be downloaded to your system and then reuploaded into the discussion in your course, which is both not supported by the Chrome extension API, and not a good idea. The same goes for announcements.
+When copying Discussions, all of the discussion replies will be put in your name. Any attachments on the discussion will not be carried over either. This is because the attachment would need to be downloaded to your system and then reuploaded into the discussion in your course, which is both not supported by the Chrome extension API, and not a good idea. The same goes for announcements.
 
-When copying Quizzes, only the first 100 questions will be copied/pasted. Question groups are supported, as long as they do not pull from a question bank. Question groups that pull from question banks are not stored in any retrievable way in the API for a quiz, and thus can not be copied/pasted.
+Question groups are supported when copying Quizzes, as long as they do not pull from a question bank. Question groups that pull from question banks are not stored in any retrievable way in the API for a quiz, and thus can not be copied/pasted.
 
 Regardless of what you're copying, POST endpoints do have data limits. If you're copying extremely large objects (>100kb), there's a good chance it won't paste.
 
