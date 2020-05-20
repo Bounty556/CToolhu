@@ -11,6 +11,8 @@ A Chrome Extension used by the Canvas Support team to automate miscellaneous tas
 - [Features](#features)
 - [Usage](#usage)
   * [Copy Paste Tool](#copy-paste-tool)
+  * [Act As A Random User](#act-as-a-random-user)
+  * [Dev Console](#dev-console)
 - [Installation](#installation)
 - [Contributing](#contributing)
 - [License](#license)
@@ -18,7 +20,7 @@ A Chrome Extension used by the Canvas Support team to automate miscellaneous tas
 ## Features
 
 * Auto-clear stuck Content Migrations
-> Works only on the /content_migrations page of a course. If any migration imports are stuck (pre-processing), this will force those to fail out.
+> Works only on the /content_migrations page of a course. If any imports are stuck in pre-processing, this will attempt to fail those out.
 * Splunk Search
 > Begins a new Splunk search based on the current page you're on in Canvas. Will work for any page, including API pages. If you are currently masquerading as a user, the search will be configured to look for only interactions from that specific user. By default, the search will include all forms of interactions except for: Pings, Page View Loads, and Unread Count calls.
 * Copy/Paste
@@ -56,6 +58,18 @@ When copying Discussions, all of the discussion replies will be put in your name
 Question groups are supported when copying Quizzes, as long as they do not pull from a question bank. Question groups that pull from question banks are not stored in any retrievable way in the API for a quiz, and thus can not be copied/pasted.
 
 Regardless of what you're copying, POST endpoints do have data limits. If you're copying extremely large objects (>100kb), there's a good chance it won't paste.
+
+### Act As A Random User
+
+This lets you act as a random user with the selected role. For Admin roles, this will work just about anywhere in an instance, and lets you individually check whether you want to include Root Account Admins, Sub Account Admins, and Admin-based roles in the list of users it will randomly pick from.
+
+All other roles require you to be inside of a course so it can determine which users it can pick from.
+
+### Dev Console
+
+Clicking on the CToolhu icon inside of the popup will open the Dev Console side panel.
+
+Currently this only displays a brief summary of the currently copied item (if there is one), and a list of all of the sites you have validated. Both can be cleared from this Dev Console, and individual sites can be removed as needed from the validated sites list.
 
 ## Installation
 
