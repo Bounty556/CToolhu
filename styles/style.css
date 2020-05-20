@@ -144,3 +144,14 @@ main {
 	width: 134px;
 	float: left;
 }
+
+#miscellaneous {
+	position: relative;
+	display: none;
+	padding: 4px;
+	width: 280px;
+}
+
+#miscellaneous button{
+	width: 268px;
+}

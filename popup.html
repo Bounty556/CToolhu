@@ -12,12 +12,9 @@
 	<!-- Debugging on the left -->
 	<section id='debugging'>
 		<button id='copyText'><img src='res/Copy.png' alt='copy'/></button>
-		<div class='scrollable preformatted' id='debugLog' contenteditable='true'> 
-		</div>
+		<div class='scrollable preformatted' id='debugLog' contenteditable='true'></div>
 		<div class='debugTray'>
-			<p class='preformatted' id='miscText'>
-				Miscellaneous
-			</p>
+			<p class='preformatted' id='miscText'></p>
 			<button id='showClipboard'>Show Clipboard</button>
 			<button id='saveToClipboard'>Save To Clipboard</button>
 		</div>
@@ -64,6 +61,13 @@
 		</div>
 	</section>
 
+	<section id='miscellaneous'>
+		<div class='styledButtons'>
+			<button id='clearMigrations'>Clear Content Migrations</button>
+			<button id='splunkSearch'>Splunk Search</button>
+		</div>
+	</section>
+
 	<!-- Main buttons on the right -->
 	<main>
 		<p class='preformatted version'>v1.0.0</p>
@@ -74,11 +78,10 @@
 		<div class='styledButtons functions'>
 			<button id='setAuth'>Set Auth Token</button>
 			<button id='getAuth'>Check Auth Token</button>
-			<button id='clearMigrations'>Clear Content Migrations</button>
-			<button id='splunkSearch'>Splunk Search</button>
 			<button id='copy'>Copy Item</button>
 			<button id='paste'>Paste Item</button>
 			<button id='masquerade'>Act As</button>
+			<button id='miscTools'>Miscellaneous</button>
 		</div>
 	</main>
 	

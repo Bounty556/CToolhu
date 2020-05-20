@@ -4,34 +4,19 @@ $('#showClipboard').on('click', showClipboard);
 $('#saveToClipboard').on('click', saveToClipboard);
 $('#copyText').on('click', copyClipboardText);
 $('input[name="role"]').on('click', toggleMasqueradeButtons);
+$('#miscTools').on('click', toggleMiscPanel);
 
 function toggleDevConsole() {
-	let debugDisplay = $('#debugging');
-	let masqDisplay = $('#masquerading');
-	let miscText = $('#miscText');
-
-	if (debugDisplay.css('display') === 'block') {
-		debugDisplay.css('display', 'none');
-	 } else {
-		showClipboard();
-		debugDisplay.css('display', 'block');
-		masqDisplay.css('display', 'none');
-	}
+	toggleSection('debugging');
 }
 
 function toggleMasqueradePanel() {
-	let debugDisplay = $('#debugging');
-	let masqDisplay = $('#masquerading');
-	
-	if (masqDisplay.css('display') === 'block') {
-		masqDisplay.css('display', 'none');
-	 } else {
-		// Update masquerading data
-		chrome.tabs.query({active: true, currentWindow: true}, updateMasqueradingData);
+	chrome.tabs.query({active: true, currentWindow: true}, updateMasqueradingData);
+	toggleSection('masquerading');
+}
 
-		masqDisplay.css('display', 'block');
-		debugDisplay.css('display', 'none');
-	}
+function toggleMiscPanel() {
+	toggleSection('miscellaneous');
 }
 
 function showClipboard() {
@@ -131,6 +116,19 @@ function updateMasqueradingData(tabs) {
 
 function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function toggleSection(section) {
+	const sections = ['debugging', 'masquerading', 'miscellaneous'];
+	const leaveOff = $(`#${section}`).css('display') === 'block';	
+
+	for (id of sections) {
+		$(`#${id}`).css('display', 'none');
+	}
+
+	if (!leaveOff) {
+		$(`#${section}`).css('display', 'block');
+	}
 }
 
 // Take JSON object formatted as string and turn into JSON object
