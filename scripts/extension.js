@@ -1,12 +1,10 @@
 $('#ctoolhuImage').on('click', toggleDevConsole);
 $('#masquerade').on('click', toggleMasqueradePanel);
-$('#showClipboard').on('click', showClipboard);
-$('#saveToClipboard').on('click', saveToClipboard);
-$('#copyText').on('click', copyClipboardText);
 $('input[name="role"]').on('click', toggleMasqueradeButtons);
 $('#miscTools').on('click', toggleMiscPanel);
 
 function toggleDevConsole() {
+	updateClipboard();
 	toggleSection('debugging');
 }
 
@@ -19,46 +17,27 @@ function toggleMiscPanel() {
 	toggleSection('miscellaneous');
 }
 
-function showClipboard() {
-	$('#miscText').css('display', 'block');
-	$('#miscText').text('Loading...');
-	updateClipboard(1000);
-}
+async function updateClipboard() {
+	chrome.storage.local.get(['copiedData'], data => {
+		const copiedData = data.copiedData;
+		let clipboardString = '-----Clipboard-----\n';
 
-function saveToClipboard() {
-	// First turn what we have in the clipboard
-	let stack = $('#debugLog').text().split('\n');
+		// Get type of object
+		clipboardString += `Type: ${capitalize(copiedData.item_type)}\n`;
 
-	// Remove empty lines
-	stack = stack.filter(word => word.length > 0);
+		// Get name of object
+		clipboardString += `Name: ${getObjectName(copiedData)}\n`;
 
-	const data = createJSONObject(stack);
+		// Get origin of object
+		clipboardString += `URL: <a href="${copiedData.html_url || '#'}" target="_blank">Link</a>\n`;
 
-	chrome.storage.local.set({'copiedData': data}, () => {
-		$('#miscText').text('Saved!');
+		// Get misc info of object
+		clipboardString += getMiscData(copiedData);
+
+		clipboardString += '-------------------\n';
+
+		$('#clipboardSummary').html(clipboardString);
 	});
-}
-
-async function updateClipboard(ms) {
-	await sleep(ms);
-	
-	chrome.storage.local.get(['ctoolhuClipboard'], data => {
-	 	$('#debugLog').html(data.ctoolhuClipboard);
-		$('#miscText').css('display', 'none');
-	});
-}
-
-// Copied code
-function copyClipboardText() {
-	const element = document.createElement('textarea');
-	element.value = document.getElementById('debugLog').innerHTML.replace(/<br>/g, '\n');
-	element.setAttribute('readonly', '');
-	element.style.position = 'absolute';
-	element.style.left = '-9999px';
-	document.body.appendChild(element);
-	element.select();
-	document.execCommand('copy');
-	document.body.removeChild(element);
 }
 
 function toggleMasqueradeButtons() {
@@ -114,10 +93,6 @@ function updateMasqueradingData(tabs) {
    });
 }
 
-function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 function toggleSection(section) {
 	const sections = ['debugging', 'masquerading', 'miscellaneous'];
 	const leaveOff = $(`#${section}`).css('display') === 'block';	
@@ -131,55 +106,46 @@ function toggleSection(section) {
 	}
 }
 
-// Take JSON object formatted as string and turn into JSON object
-function createJSONObject(stack) {
-	let object = {};
-	stack.shift(); // First, remove excess '{'
-	stack.pop(); // Then, remove '}'
+function getObjectName(object) {
+	const type = object.item_type;
 
-	while (stack.length > 0) {
-		let line = stack.shift().split(/:(.+)?/);
+	switch (type) {
+		case 'quiz':
+			return object.title;
+		case 'assignment':
+			return object.name;
+		case 'discussion':
+			return object.title;
+		case 'rubric':
+			return object.title;
+		case 'page':
+			return object.title;
+		default:
+			return '';
+	}
+}
 
-		let key = line[0].trim();
+function getMiscData(object) {
+	const type = object.item_type;
+	let string = '';
 
-		// If there is nothing past 'key:' then, the next line should be a '{', so this is an object
-		let value = (line[1] == null || line[1].trim() == '') ? 'object' : line[1].trim();
-		let stringRegex = /^".+"$/;
-
-		// This is a string!
-		if (value.match(stringRegex)) {
-			value = value.substring(1, value.length - 1);
-		} else if (value.toLowerCase() === 'undefined' || value.toLowerCase() === 'null') {
-			value = null;
-		} else if (value.toLowerCase() === 'true') {
-			value = true;
-		} else if (value.toLowerCase() === 'false') {
-			value = false;
-		} else if (!isNaN(value)) {
-			value = +value;
-		} else if (value.toLowerCase() === 'object') {
-			// Remove lines from stack associated with object
-			let tempStack = [];
-			tempStack.push(stack.shift());
-			let bracketCount = 1;
-			while (bracketCount > 0) {
-				var tempLine = stack.shift();
-				if (tempLine.includes('{')) {
-					bracketCount++;
-				} else if (tempLine.includes('}')) {
-					bracketCount--;
-				}
-
-				tempStack.push(tempLine);
+	switch (type) {
+		case 'quiz':
+			let type = object.quiz_type;
+			if (type === 'assignment') {
+				type = 'Graded Quiz';
 			}
-			value = createJSONObject(tempStack);
-		} else {
-			console.error(value + " is an invalid value");
-			continue;
-		}
-
-		object[key] = value;
+			string += `Quiz Type: ${type || 'Graded Quiz'}\n`;
+			string += `Question Count: ${object.questions.length}\n`;
+			break;
+		case 'discussion':
+			string += `Entry Count: ${object.entries.length}\n`;
+			break;
+		case 'assignment':
+		case 'rubric':
+		case 'page':
+			break;
 	}
 
-	return object;
+	return string;
 }

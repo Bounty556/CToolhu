@@ -36,12 +36,6 @@ function verifyImagesHandler() {
 	});
 }
 
-function getClipboardHandler() {
-	chrome.tabs.executeScript(null, {
-		file: 'scripts/getClipboard.js'
-	});
-}
-
 function actAsRandomHandler() {
 	chrome.tabs.executeScript(null, {
 		file: 'scripts/actAsRandom.js'
@@ -55,8 +49,6 @@ document.getElementById('clearMigrations').addEventListener('click', migrationsH
 document.getElementById('splunkSearch').addEventListener('click', splunkHandler);
 document.getElementById('copy').addEventListener('click', copyHandler);
 document.getElementById('paste').addEventListener('click', pasteHandler);
-document.getElementById('showClipboard').addEventListener('click', getClipboardHandler);
-document.getElementById('ctoolhuImage').addEventListener('click', getClipboardHandler);
 document.getElementById('actAsRandom').addEventListener('click', setActAsRandomOptions);
 
 // Button functions

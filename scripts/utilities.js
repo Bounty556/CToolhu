@@ -104,3 +104,11 @@ function getAPIEndpoint() {
 function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+function capitalize(string) {
+	if (typeof string != 'string' || string.length === 0) {
+		return string;
+	}
+
+	return string.charAt(0).toUpperCase() + string.substr(1, string.length - 1);
+}

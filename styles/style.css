@@ -18,14 +18,9 @@ main {
 	margin: 0px;
 }
 
-.scrollable {
-	overflow: scroll;
-	height: 200px;
-}
-
 .preformatted {
 	font-family: monospace;
-	font-size: 10px;
+	font-size: 12px;
 	white-space: pre;
 }
 
@@ -83,6 +78,10 @@ main {
 
 #actAsRandom {
 	width: 100%;
+}
+
+#clipboardSummary {
+	overflow: hidden;
 }
 
 #ctoolhuImage {
