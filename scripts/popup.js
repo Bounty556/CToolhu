@@ -57,7 +57,7 @@ function setAuth() {
 
 	if (tempAuth)
 	{
-		if (!/\d{2}~[a-zA-Z0123456789]{64}/.test(tempAuth)) {
+		if (!/\d+~[a-zA-Z0123456789]{64}/.test(tempAuth)) {
 			alert('Invalid Auth Token entered');
 			return;
 		}
