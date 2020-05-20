@@ -2,7 +2,7 @@
 async function paginate(url, payload, authToken, nextLink = null, realUserID = null) {
 	let accumulatedData = [];
 	let linkHeader = null;
-	let lock = true;
+	var lock = true;
 	const lockLimit = 10;
 	let currentLockAttempt = 0;
 
@@ -26,8 +26,7 @@ async function paginate(url, payload, authToken, nextLink = null, realUserID = n
 			xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
 		}
 	}).then((data, textStatus, jqXHR) => {
-
-		// This API may only return an object
+		// This API may only return a single object
 		if (Array.isArray(data)) {
 			accumulatedData.push(...data);
 		} else {
@@ -35,8 +34,6 @@ async function paginate(url, payload, authToken, nextLink = null, realUserID = n
 		}
 
 		linkHeader = jqXHR.getResponseHeader('link');
-
-		
 	});
 
 	await call;
