@@ -456,7 +456,9 @@ async function pasteRubric(copiedData, courseID, authToken) {
 async function addEntryReplies(promisedEntry, replies, URL, authToken) {
 	const entry = await promisedEntry;
 
-	for (var i = 0; i < replies.length; i++) {
-		ensureResults(`${URL}/${entry.id}/replies`, 'POST', `message=${encodeURIComponent(replies[i].message)}`, authToken);
+	if (entry) {
+		for (reply of replies) {
+			ensureResults(`${URL}/${entry.id}/replies`, 'POST', `message=${encodeURIComponent(reply.message)}`, authToken);
+		}
 	}
 }

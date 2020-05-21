@@ -86,9 +86,10 @@ async function ensureResults(url, call, payload, authToken, waitTime = 25) {
 		if (err.status === 403) {
 			await sleep(waitTime);
 			results = await ensureResults(url, call, payload, authToken, waitTime * 2);
+		} else {
+			return null;
 		}
 	}
-	
 	return results;
 }
 

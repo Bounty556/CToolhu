@@ -60,6 +60,22 @@ async function copyDiscussion(authToken) {
 
 	// Copy each of the discussion's entries
 	copiedData.entries = await paginate(`${getAPIEndpoint()}/entries`, '', authToken);
+	
+	let replyCopyCounter = 0;
+	let repliesToCopy = 0;
+	for (let i = 0; i < copiedData.entries.length; i++) {
+		if (copiedData.entries[i].recent_replies) {
+			repliesToCopy++;
+			paginate(`${getAPIEndpoint()}/entries/${copiedData.entries[i].id}/replies`, '', authToken).then(data => {
+				copiedData.entries[i].recent_replies = data;
+				replyCopyCounter++;
+			});
+		}
+	}
+
+	while (replyCopyCounter < repliesToCopy) {
+		await sleep(50);
+	}
 
 	// If this discussion has an assoociated rubric
 	if (copiedData.assignment && copiedData.assignment.rubric) {
