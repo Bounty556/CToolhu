@@ -61,6 +61,7 @@ async function copyDiscussion(authToken) {
 	// Copy each of the discussion's entries
 	copiedData.entries = await paginate(`${getAPIEndpoint()}/entries`, '', authToken);
 	
+	// Kick off threads to begin copying replies
 	let replyCopyCounter = 0;
 	let repliesToCopy = 0;
 	for (let i = 0; i < copiedData.entries.length; i++) {
@@ -71,10 +72,6 @@ async function copyDiscussion(authToken) {
 				replyCopyCounter++;
 			});
 		}
-	}
-
-	while (replyCopyCounter < repliesToCopy) {
-		await sleep(50);
 	}
 
 	// If this discussion has an assoociated rubric
@@ -94,6 +91,11 @@ async function copyDiscussion(authToken) {
 	
 			return criterion;
 		});
+	}
+
+	// Make sure we get all of our replies copied
+	while (replyCopyCounter < repliesToCopy) {
+		await sleep(50);
 	}
 
 	chrome.storage.local.set({'copiedData': copiedData}, () => {
