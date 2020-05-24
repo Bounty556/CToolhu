@@ -133,7 +133,7 @@ async function copyQuiz(authToken) {
 	// Grab all question groups in this quiz
 	copiedData.question_groups = [];
 	for (question of copiedData.questions) {
-		if (!groupIdList.includes(question.quiz_group_id)) {
+		if (question.quiz_group_id && !groupIdList.includes(question.quiz_group_id)) {
 			groupIdList.push(question.quiz_group_id);
 		}
 	}

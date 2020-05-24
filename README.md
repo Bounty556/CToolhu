@@ -47,7 +47,7 @@ This tool currently works with the following items:
 - Announcements
 - Rubrics
 
-Currently, the tool works only when you're on the page of the item you want to copy. For example, if you wanted to copy an assignment, go to the /courses/###/assignments/### page, and click 'Copy Item'. At the moment, this does not work on the edit page for any items, but that's subject to change. You can then go to any course and paste this item in there using the 'Paste Item' button. The first time you paste an item on a site you haven't before, it will prompt you to add that site to the list of valid sites you can paste to. This is to make sure you know exactly where you're pasting to, in case you accidentally click paste in a non-sandbox instance.
+Currently, the tool works only when you're on the page of the item you want to copy. For example, if you wanted to copy an assignment, go to the /courses/###/assignments/### page, and click 'Copy Item'. As of 1.2.0, this also works on the edit page for any items. You can then go to any course and paste this item in there using the 'Paste Item' button. The first time you paste an item on a site you haven't before, it will prompt you to add that site to the list of valid sites you can paste to. This is to make sure you know exactly where you're pasting to, in case you accidentally click paste in a non-sandbox instance.
 
 When copying Assignments, it's important to note that external tool assignments can not be copied. This includes Quizzes.Next assignments.
 
