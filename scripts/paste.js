@@ -200,8 +200,16 @@ async function pasteDiscussion(copiedData, courseID, authToken) {
 
 	// Remove extra '&'
 	payload = payload.substr(0, payload.length - 1);
+	let discussion;
 
-	const discussion = await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/discussion_topics`, 'POST', payload, authToken);
+	try {
+		discussion = await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/discussion_topics`, 'POST', payload, authToken);
+	} catch(err) {
+
+		// Could be an issue with the payload size - decrease and re-post
+		payload = payload.replace(/message=[^\?]+/, 'message=Description too long to paste');
+		discussion = await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/discussion_topics`, 'POST', payload, authToken);
+	}
 
 	// Add rubric
 	if (copiedData.assignment && copiedData.assignment.rubric) {

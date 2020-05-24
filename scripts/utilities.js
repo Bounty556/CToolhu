@@ -66,20 +66,17 @@ function parseLinkHeader(header) {
 }
 
 function apiCall(url, call, payload, authToken) {
-	const result = $.ajax( {
+	return $.ajax( {
 		url: `${url}?${payload}`,
 		method: call,
 		beforeSend: xhr => {
 			xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
 		}
 	});
-
-	return result;
 }
 
 // Makes use of Exponential Backoff to ensure that the call runs without being rate limited
 async function ensureResults(url, call, payload, authToken, waitTime = 25) {
-	let results = null;
 	try {
 		results = await apiCall(url, call, payload, authToken);
 	} catch (err) {
@@ -90,14 +87,13 @@ async function ensureResults(url, call, payload, authToken, waitTime = 25) {
 			return null;
 		}
 	}
+
 	return results;
 }
 
 function getAPIEndpoint() {
 	let path = document.location.pathname.match(/(\/api\/v1)?(.+)/)[2];
 	path = path.replace(/\/edit/, '');
-
-	console.log(path);
 
 	return `${document.location.origin}/api/v1${path}`;
 }
