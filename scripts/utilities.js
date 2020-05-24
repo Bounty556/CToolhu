@@ -94,7 +94,10 @@ async function ensureResults(url, call, payload, authToken, waitTime = 25) {
 }
 
 function getAPIEndpoint() {
-	const path = document.location.pathname.match(/(\/api\/v1)?(.+)/)[2];
+	let path = document.location.pathname.match(/(\/api\/v1)?(.+)/)[2];
+	path = path.replace(/\/edit/, '');
+
+	console.log(path);
 
 	return `${document.location.origin}/api/v1${path}`;
 }

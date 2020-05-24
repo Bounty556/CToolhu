@@ -12,7 +12,7 @@ chrome.storage.local.get(['ctoolhuAuthToken'], data => {
 		copyAssignment(authToken);
 	else if (/courses\/\d+\/discussion_topics\/\d+/.test(url))
 		copyDiscussion(authToken);
-	else if (/courses\/\d+\/pages\/[^\/]+$/.test(url))
+	else if (/courses\/\d+\/pages\/[^\/]+/.test(url))
 		copyPage(authToken);
 	else if (/courses\/\d+\/quizzes\/\d+/.test(url))
 		copyQuiz(authToken);
