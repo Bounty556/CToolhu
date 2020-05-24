@@ -76,15 +76,23 @@ function apiCall(url, call, payload, authToken) {
 }
 
 // Makes use of Exponential Backoff to ensure that the call runs without being rate limited
-async function ensureResults(url, call, payload, authToken, waitTime = 25) {
+async function ensureResults(url, call, payload, failedParam, authToken, waitTime = 25) {
+	let results = null;
 	try {
 		results = await apiCall(url, call, payload, authToken);
 	} catch (err) {
 		if (err.status === 403) {
 			await sleep(waitTime);
-			results = await ensureResults(url, call, payload, authToken, waitTime * 2);
+			results = await ensureResults(url, call, payload, failedParam, authToken, waitTime * 2);
 		} else {
-			return null;
+			// Try reducing payload
+			if (failedParam) {
+				const regex = new RegExp(`${failedParam}=[^&]+`);
+				payload = payload.replace(regex, `${failedParam}=Description too long to paste.`);
+				results = await ensureResults(url, call, payload, null, authToken, waitTime);
+			} else {
+				return null;
+			}
 		}
 	}
 

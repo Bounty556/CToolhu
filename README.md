@@ -55,7 +55,7 @@ When copying Discussions, all of the discussion replies will be put in your name
 
 Question groups are supported when copying Quizzes, as long as they do not pull from a question bank. Question groups that pull from question banks are not stored in any retrievable way in the API for a quiz, and thus can not be copied/pasted.
 
-Regardless of what you're copying, POST endpoints do have data limits. If you're copying extremely large objects (>100kb), there's a good chance it won't paste.
+Regardless of what you're copying, POST endpoints do have data limits. If you're copying extremely large objects (>10kb), there's a good chance it won't paste. As of 1.2.0, large objects have their descriptions replaced so they can be pasted still.
 
 ## Installation
 

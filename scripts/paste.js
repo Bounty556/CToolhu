@@ -117,7 +117,16 @@ async function pasteAssignment(copiedData, courseID, authToken) {
 	// Get rid of extra '&'
 	payload = payload.substr(0, payload.length - 1);
 
-	const assignment = await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/assignments`, 'POST', payload, authToken);
+	let assignment;
+
+	try {
+		assignment = await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/assignments`, 'POST', payload, authToken);
+	} catch(err) {
+		// Could be an issue with the payload size - decrease and re-post
+		payload = payload.replace(/assignment\[description\]=[^&]+/, 'assignment[description]=Description too long to paste');
+		console.log(payload);
+		assignment = await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/assignments`, 'POST', payload, authToken);
+	}
 
 	// We will continue pasting should we have a rubric associated with this assignment
 	if (!(copiedData.rubric && copiedData.rubric_settings)) {
@@ -207,7 +216,7 @@ async function pasteDiscussion(copiedData, courseID, authToken) {
 	} catch(err) {
 
 		// Could be an issue with the payload size - decrease and re-post
-		payload = payload.replace(/message=[^\?]+/, 'message=Description too long to paste');
+		payload = payload.replace(/message=[^&]+/, 'message=Description too long to paste');
 		discussion = await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/discussion_topics`, 'POST', payload, authToken);
 	}
 
@@ -257,7 +266,7 @@ async function pasteDiscussion(copiedData, courseID, authToken) {
 	}
 
 	for (reply of copiedData.entries) {
-		const entry = ensureResults(`${document.location.origin}/api/v1/courses/${courseID}/discussion_topics/${discussion.id}/entries`, 'POST', `message=${encodeURIComponent(reply.message)}`, authToken);
+		const entry = ensureResults(`${document.location.origin}/api/v1/courses/${courseID}/discussion_topics/${discussion.id}/entries`, 'POST', `message=${encodeURIComponent(reply.message)}`, 'message', authToken);
 
 		// Add recent replies to entries
 		if (reply.recent_replies) {
@@ -288,7 +297,12 @@ async function pastePage(copiedData, courseID, authToken) {
 	// Get rid of extra '&'
 	payload = payload.substr(0, payload.length - 1);
 
-	await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/pages`, 'POST', payload, authToken);
+	try {
+		await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/pages`, 'POST', payload, authToken);
+	} catch (err) {
+		payload = payload.replace(/wiki_page\[body\]=[^&]+/, 'wiki_page[body]=Description too long to paste');
+		await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/pages`, 'POST', payload, authToken);
+	}
 
 	alert('Done!');
 }
@@ -311,7 +325,14 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 	// Get rid of extra '&'
 	payload = payload.substr(0, payload.length - 1);
 
-	const quiz = await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/quizzes`, 'POST', payload, authToken);
+	let quiz;
+	
+	try {
+		quiz = await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/quizzes`, 'POST', payload, authToken);
+	} catch (err) {
+		payload = payload.replace(/quiz\[description\]=[^&]+/, 'quiz[description]=Description too long to paste');
+		quiz = await apiCall(`${document.location.origin}/api/v1/courses/${courseID}/quizzes`, 'POST', payload, authToken);
+	}
 
 	// Map question groups in original quiz to groups in new quiz
 	let groupIDMap = {};
@@ -324,7 +345,7 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 		// If we don't declare this outside of the callback, all questiongroupids will be the same
 		const questionGroupID = questionGroup.id;
 
-		ensureResults(`${document.location.origin}/api/v1/courses/${courseID}/quizzes/${quiz.id}/groups`, 'POST', payload, authToken).then(data => {
+		ensureResults(`${document.location.origin}/api/v1/courses/${courseID}/quizzes/${quiz.id}/groups`, 'POST', payload, null, authToken).then(data => {
 			// https://canvas.instructure.com/doc/api/quiz_question_groups.html#method.quizzes/quiz_groups.create
 			groupIDMap[questionGroupID] = data.quiz_groups[0].id;
 			postedGroupCount++;
@@ -407,7 +428,7 @@ async function pasteQuiz(copiedData, courseID, authToken) {
 		// Get rid of excess '&'
 		payload = payload.substr(0, payload.length - 1);
 
-		ensureResults(`${document.location.origin}/api/v1/courses/${courseID}/quizzes/${quiz.id}/questions`, 'POST', payload, authToken);
+		ensureResults(`${document.location.origin}/api/v1/courses/${courseID}/quizzes/${quiz.id}/questions`, 'POST', payload, null, authToken);
 	}
 
 	alert('Done');
@@ -466,7 +487,7 @@ async function addEntryReplies(promisedEntry, replies, URL, authToken) {
 
 	if (entry) {
 		for (reply of replies) {
-			ensureResults(`${URL}/${entry.id}/replies`, 'POST', `message=${encodeURIComponent(reply.message)}`, authToken);
+			ensureResults(`${URL}/${entry.id}/replies`, 'POST', `message=${encodeURIComponent(reply.message)}`, 'message', authToken);
 		}
 	}
 }
